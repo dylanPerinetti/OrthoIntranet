@@ -10,16 +10,41 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Compte Admin — Dr André
+        User::firstOrCreate(
+            ['email' => 'andre@orthodz.fr'],
+            [
+                'name'     => 'Dr André',
+                'password' => bcrypt('password'),
+                'role'     => 'admin',
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Compte Secrétaire
+        User::firstOrCreate(
+            ['email' => 'secretaire@orthodz.fr'],
+            [
+                'name'     => 'Marie Dupont',
+                'password' => bcrypt('password'),
+                'role'     => 'secretaire',
+            ]
+        );
+
+        // Compte Assistante
+        User::firstOrCreate(
+            ['email' => 'assistante@orthodz.fr'],
+            [
+                'name'     => 'Sophie Martin',
+                'password' => bcrypt('password'),
+                'role'     => 'assistante',
+            ]
+        );
+
+        $this->call([
+            StreamSeeder::class,
+            UserStorySeeder::class,
         ]);
     }
 }

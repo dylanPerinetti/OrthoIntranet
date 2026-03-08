@@ -1,43 +1,59 @@
 <template>
-  <div
-    class="group relative bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-lg hover:border-slate-300 transition-all duration-300 overflow-hidden"
-  >
-    <!-- Colored top accent -->
-    <div :class="['h-1.5 w-full', accentClass]"></div>
+  <div class="group bg-white rounded-xl border border-gray-200/80 overflow-hidden hover:shadow-md hover:border-gray-300/80 transition-all duration-200">
+    <!-- Top accent bar -->
+    <div class="h-1 w-full" :style="{ backgroundColor: accentColor }"></div>
 
-    <div class="p-6">
+    <div class="p-5">
       <!-- Header -->
-      <div class="flex items-start gap-4 mb-4">
-        <div :class="['flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center', iconBgClass]">
-          <component :is="icon" :class="['w-6 h-6', iconColorClass]" :stroke-width="1.8" />
+      <div class="flex items-start gap-3.5 mb-3">
+        <div
+          class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+          :style="{ backgroundColor: accentColor + '14' }"
+        >
+          <component
+            :is="icon"
+            class="w-5 h-5"
+            :style="{ color: accentColor }"
+            :stroke-width="1.8"
+          />
         </div>
-        <div>
-          <h3 class="text-lg font-semibold text-slate-900">{{ title }}</h3>
-          <p class="text-sm text-slate-500 mt-0.5">{{ subtitle }}</p>
+        <div class="min-w-0">
+          <h3 class="text-[15px] font-semibold text-gray-900">{{ title }}</h3>
+          <p class="text-xs text-gray-500 mt-0.5">{{ subtitle }}</p>
         </div>
       </div>
 
       <!-- Description -->
-      <p class="text-sm text-slate-600 leading-relaxed mb-5">{{ description }}</p>
+      <p class="text-[13px] text-gray-600 leading-relaxed mb-4">{{ description }}</p>
 
-      <!-- Features list -->
-      <ul class="space-y-2.5">
+      <!-- Features -->
+      <ul class="space-y-2">
         <li
           v-for="(feature, index) in features"
           :key="index"
-          class="flex items-center gap-3 text-sm text-slate-700"
+          class="flex items-start gap-2.5 text-[13px] text-gray-700"
         >
-          <div :class="['flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center', dotBgClass]">
-            <component :is="featureIcon || CheckCircle2" :class="['w-3.5 h-3.5', dotColorClass]" :stroke-width="2" />
+          <div
+            class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-px"
+            :style="{ backgroundColor: accentColor + '14' }"
+          >
+            <CheckCircle2
+              class="w-3 h-3"
+              :style="{ color: accentColor }"
+              :stroke-width="2"
+            />
           </div>
           {{ feature }}
         </li>
       </ul>
 
-      <!-- Status badge -->
-      <div class="mt-5 flex items-center gap-2">
-        <span :class="['inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium', badgeClass]">
-          <span class="w-1.5 h-1.5 rounded-full bg-current opacity-70"></span>
+      <!-- Status -->
+      <div class="mt-4 pt-3 border-t border-gray-100">
+        <span
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium"
+          :style="{ backgroundColor: accentColor + '10', color: accentColor }"
+        >
+          <span class="w-1.5 h-1.5 rounded-full" :style="{ backgroundColor: accentColor }"></span>
           {{ status }}
         </span>
       </div>
@@ -55,12 +71,7 @@ defineProps({
   features: Array,
   status: String,
   icon: [Object, Function],
-  featureIcon: [Object, Function],
-  accentClass: { type: String, default: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
-  iconBgClass: { type: String, default: 'bg-blue-50' },
-  iconColorClass: { type: String, default: 'text-blue-600' },
-  dotBgClass: { type: String, default: 'bg-blue-50' },
-  dotColorClass: { type: String, default: 'text-blue-500' },
-  badgeClass: { type: String, default: 'bg-blue-50 text-blue-700' },
+  slug: String,
+  accentColor: { type: String, default: '#3b82f6' },
 });
 </script>
