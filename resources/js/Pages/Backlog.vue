@@ -4,8 +4,8 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Backlog</h1>
-          <p class="text-sm text-gray-500 mt-0.5">Gérez les User Stories du projet</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Backlog</h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Gérez les User Stories du projet</p>
         </div>
         <button
           @click="openCreateModal()"
@@ -50,18 +50,18 @@
         <div
           v-for="column in filteredColumns"
           :key="column.key"
-          class="bg-white rounded-xl border border-gray-200/80 flex flex-col min-h-[450px]"
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 flex flex-col min-h-[450px]"
           @dragover.prevent="onDragOver($event, column.key)"
           @dragleave="onDragLeave($event)"
           @drop="onDrop($event, column.key)"
         >
           <!-- Column header -->
-          <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-100">
+          <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-100 dark:border-gray-700">
             <div class="flex items-center gap-2.5">
               <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: column.color }"></span>
-              <h3 class="text-sm font-semibold text-gray-800">{{ column.label }}</h3>
+              <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ column.label }}</h3>
             </div>
-            <span class="text-[11px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md font-medium tabular-nums">
+            <span class="text-[11px] text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-md font-medium tabular-nums">
               {{ column.items.length }}
             </span>
           </div>
@@ -74,7 +74,7 @@
               draggable="true"
               @dragstart="onDragStart($event, story)"
               @dragend="onDragEnd"
-              class="bg-white rounded-lg border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow transition-all cursor-grab active:cursor-grabbing p-3.5 group"
+              class="bg-white dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm hover:shadow transition-all cursor-grab active:cursor-grabbing p-3.5 group"
             >
               <!-- Top row: priority + stream -->
               <div class="flex items-center justify-between mb-2">
@@ -93,7 +93,7 @@
               </div>
 
               <!-- Title -->
-              <h4 class="text-[13px] font-semibold text-gray-900 leading-snug mb-1">{{ story.title }}</h4>
+              <h4 class="text-[13px] font-semibold text-gray-900 dark:text-white leading-snug mb-1">{{ story.title }}</h4>
 
               <!-- Description -->
               <p v-if="story.description" class="text-[11px] text-gray-500 leading-relaxed line-clamp-2 mb-2.5">
@@ -101,7 +101,7 @@
               </p>
 
               <!-- Footer -->
-              <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+              <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
                 <div class="flex items-center gap-2">
                   <div
                     v-if="story.assignee"
@@ -152,10 +152,10 @@
     <Teleport to="body">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 pt-16 sm:pt-4">
         <div class="absolute inset-0 bg-black/40" @click="closeModal"></div>
-        <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+        <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
           <!-- Header -->
-          <div class="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between rounded-t-xl z-10">
-            <h3 class="text-base font-bold text-gray-900">
+          <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-5 py-4 flex items-center justify-between rounded-t-xl z-10">
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">
               {{ editingStory ? 'Modifier la User Story' : 'Nouvelle User Story' }}
             </h3>
             <button @click="closeModal" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">

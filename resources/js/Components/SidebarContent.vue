@@ -101,6 +101,20 @@
 
     <!-- User section -->
     <div class="px-3 py-3 border-t border-white/[0.06]">
+      <!-- Settings link -->
+      <button
+        @click="$emit('navigate', '/settings')"
+        :class="[
+          'w-full flex items-center gap-3 px-3 py-2 mb-2 rounded-lg text-[13px] font-medium transition-all',
+          isActive('/settings')
+            ? 'bg-white/[0.08] text-white'
+            : 'text-gray-400 hover:bg-white/[0.04] hover:text-gray-200',
+        ]"
+      >
+        <SettingsIcon :class="['w-[18px] h-[18px] flex-shrink-0', isActive('/settings') ? 'text-blue-400' : 'text-gray-500']" :stroke-width="1.8" />
+        <span class="truncate">Réglages</span>
+      </button>
+
       <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group">
         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
           {{ auth.user.name.charAt(0).toUpperCase() }}
@@ -122,7 +136,7 @@
 </template>
 
 <script setup>
-import { Stethoscope, LogOut, LayoutDashboard, Kanban, ShieldCheck, UserCircle2, BookOpen } from 'lucide-vue-next';
+import { Stethoscope, LogOut, LayoutDashboard, Kanban, ShieldCheck, Milestone, UserCircle2, BookOpen, Settings as SettingsIcon } from 'lucide-vue-next';
 
 defineProps({
   auth: Object,
@@ -136,5 +150,6 @@ const iconMap = {
   LayoutDashboard,
   Kanban,
   ShieldCheck,
+  Milestone,
 };
 </script>

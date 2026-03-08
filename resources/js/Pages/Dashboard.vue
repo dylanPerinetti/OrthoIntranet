@@ -6,8 +6,8 @@
       <!-- PAGE HEADER                              -->
       <!-- ═══════════════════════════════════════ -->
       <div>
-        <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Vue d'ensemble</h1>
-        <p class="text-sm text-gray-500 mt-1">Tableau de bord du projet OrthoIntranet</p>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Vue d'ensemble</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Tableau de bord du projet OrthoIntranet</p>
       </div>
 
       <!-- ═══════════════════════════════════════ -->
@@ -17,7 +17,7 @@
         <div
           v-for="(kpi, i) in kpis"
           :key="i"
-          class="bg-white rounded-xl border border-gray-200/80 p-4 sm:p-5 hover:shadow-sm transition-shadow"
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-4 sm:p-5 hover:shadow-sm transition-shadow"
         >
           <div class="flex items-center justify-between mb-3">
             <div :class="['w-9 h-9 rounded-lg flex items-center justify-center', kpi.bg]">
@@ -33,8 +33,8 @@
               {{ kpi.badge }}
             </span>
           </div>
-          <div class="text-2xl font-bold text-gray-900">{{ kpi.value }}</div>
-          <div class="text-xs text-gray-500 mt-0.5">{{ kpi.label }}</div>
+          <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ kpi.value }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ kpi.label }}</div>
         </div>
       </div>
 
@@ -77,9 +77,9 @@
         </div>
 
         <!-- Backlog stats (1 col) -->
-        <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6 flex flex-col">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-5 sm:p-6 flex flex-col">
           <div class="flex items-center justify-between mb-5">
-            <h3 class="text-sm font-semibold text-gray-900">Progression Backlog</h3>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Progression Backlog</h3>
             <a
               href="/backlog"
               class="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
@@ -93,9 +93,9 @@
           <div class="mb-5">
             <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
               <span>Avancement global</span>
-              <span class="font-semibold text-gray-700">{{ progressPercent }}%</span>
+              <span class="font-semibold text-gray-700 dark:text-gray-300">{{ progressPercent }}%</span>
             </div>
-            <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div class="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
               <div
                 class="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full transition-all duration-500"
                 :style="{ width: progressPercent + '%' }"
@@ -108,23 +108,23 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-sm bg-gray-300"></span>
-                <span class="text-sm text-gray-600">À faire</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">À faire</span>
               </div>
-              <span class="text-sm font-semibold text-gray-900">{{ storyCounts.todo }}</span>
+              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ storyCounts.todo }}</span>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-sm bg-blue-500"></span>
-                <span class="text-sm text-gray-600">En cours</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">En cours</span>
               </div>
-              <span class="text-sm font-semibold text-gray-900">{{ storyCounts.in_progress }}</span>
+              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ storyCounts.in_progress }}</span>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span>
-                <span class="text-sm text-gray-600">Terminé</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">Terminé</span>
               </div>
-              <span class="text-sm font-semibold text-gray-900">{{ storyCounts.done }}</span>
+              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ storyCounts.done }}</span>
             </div>
           </div>
 
@@ -144,8 +144,8 @@
       <div>
         <div class="flex items-center justify-between mb-5">
           <div>
-            <h2 class="text-lg font-bold text-gray-900">Axes d'Activités</h2>
-            <p class="text-sm text-gray-500">{{ streams.length }} axes de transformation digitale</p>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Axes d'Activités</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ streams.length }} axes de transformation digitale</p>
           </div>
         </div>
 
@@ -154,7 +154,7 @@
             v-for="stream in streams"
             :key="stream.slug"
             :href="`/streams/${stream.slug}`"
-            class="group bg-white rounded-xl border border-gray-200/80 overflow-hidden hover:shadow-md hover:border-gray-300/80 transition-all duration-200 no-underline"
+            class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 overflow-hidden hover:shadow-md hover:border-gray-300/80 dark:hover:border-gray-600/80 transition-all duration-200 no-underline"
             @click.prevent="$inertia.visit(`/streams/${stream.slug}`)"
           >
             <!-- Top accent bar -->
@@ -175,21 +175,21 @@
                   />
                 </div>
                 <div class="min-w-0">
-                  <h3 class="text-[15px] font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{{ stream.name }}</h3>
-                  <p class="text-xs text-gray-500 mt-0.5">{{ stream.user_stories_count }} user stories</p>
+                  <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ stream.name }}</h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ stream.user_stories_count }} user stories</p>
                 </div>
               </div>
 
               <!-- Description -->
-              <p class="text-[13px] text-gray-600 leading-relaxed mb-4">{{ stream.description }}</p>
+              <p class="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed mb-4">{{ stream.description }}</p>
 
               <!-- Per-stream progress -->
               <div class="mb-3">
                 <div class="flex items-center justify-between text-[11px] text-gray-500 mb-1.5">
                   <span>Avancement</span>
-                  <span class="font-semibold text-gray-700">{{ streamProgress(stream) }}%</span>
+                  <span class="font-semibold text-gray-700 dark:text-gray-300">{{ streamProgress(stream) }}%</span>
                 </div>
-                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
                     class="h-full rounded-full transition-all duration-500"
                     :style="{ width: streamProgress(stream) + '%', backgroundColor: stream.color }"
@@ -222,11 +222,11 @@
       <!-- ═══════════════════════════════════════ -->
       <div class="grid lg:grid-cols-2 gap-6">
         <!-- Recent Stories -->
-        <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-5 sm:p-6">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2">
               <Clock class="w-4 h-4 text-gray-400" :stroke-width="2" />
-              <h3 class="text-sm font-semibold text-gray-900">Activité récente</h3>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Activité récente</h3>
             </div>
             <a
               href="/user-stories"
@@ -254,7 +254,7 @@
                 ></span>
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-medium text-gray-900 truncate">{{ story.title }}</h4>
+                <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ story.title }}</h4>
                 <div class="flex items-center gap-2 mt-1">
                   <span
                     v-if="story.stream"
@@ -292,13 +292,86 @@
           </div>
         </div>
 
-        <!-- Roadmap -->
-        <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
-          <div class="flex items-center gap-2 mb-5">
-            <Route class="w-4 h-4 text-gray-400" :stroke-width="2" />
-            <h3 class="text-sm font-semibold text-gray-900">Roadmap Agile</h3>
+        <!-- Roadmap (dynamique depuis sprints DB) -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-5 sm:p-6">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2">
+              <Route class="w-4 h-4 text-gray-400" :stroke-width="2" />
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Roadmap Agile</h3>
+            </div>
+            <a
+              href="/sprints"
+              class="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              @click.prevent="$inertia.visit('/sprints')"
+            >
+              Voir tout →
+            </a>
           </div>
-          <RoadmapTimeline :steps="roadmapSteps" />
+
+          <div v-if="sprints?.length" class="relative">
+            <!-- Vertical line -->
+            <div class="absolute left-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-blue-300 via-blue-400 to-indigo-500"></div>
+
+            <div class="space-y-6">
+              <div
+                v-for="(sprint, index) in sprints"
+                :key="sprint.id"
+                class="relative flex items-start gap-4 pl-1"
+              >
+                <!-- Circle -->
+                <div
+                  :class="[
+                    'relative z-10 flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border-2',
+                    sprint.status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' :
+                    sprint.status === 'active'    ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-200' :
+                                                    'bg-white border-gray-300 text-gray-500',
+                  ]"
+                >
+                  <CheckCircle2 v-if="sprint.status === 'completed'" class="w-4 h-4" :stroke-width="2.5" />
+                  <template v-else>S{{ sprint.number }}</template>
+                </div>
+
+                <!-- Content -->
+                <div class="flex-1 pb-1">
+                  <div class="flex items-center gap-2 mb-0.5">
+                    <h4 :class="['text-sm font-semibold', sprint.status === 'active' ? 'text-gray-900' : 'text-gray-600']">
+                      {{ sprint.name }}
+                    </h4>
+                    <span
+                      :class="[
+                        'px-1.5 py-0.5 rounded text-[10px] font-medium',
+                        sprint.status === 'completed' ? 'bg-emerald-50 text-emerald-700' :
+                        sprint.status === 'active'    ? 'bg-blue-50 text-blue-700' :
+                                                        'bg-gray-100 text-gray-500',
+                      ]"
+                    >
+                      {{ { planned: 'Planifié', active: 'Actif', completed: 'Terminé' }[sprint.status] }}
+                    </span>
+                  </div>
+                  <p v-if="sprint.goal" class="text-xs text-gray-500 leading-relaxed mb-1.5">{{ sprint.goal }}</p>
+                  <div class="flex items-center gap-3 text-[11px] text-gray-400">
+                    <span>{{ formatSprintDate(sprint.start_date) }} → {{ formatSprintDate(sprint.end_date) }}</span>
+                    <span v-if="sprint.user_stories_count">· {{ sprint.stories_done_count }}/{{ sprint.user_stories_count }} stories</span>
+                  </div>
+                  <!-- Mini progress -->
+                  <div v-if="sprint.user_stories_count" class="mt-2 w-full max-w-[200px] h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      :class="[
+                        'h-full rounded-full',
+                        sprint.status === 'completed' ? 'bg-emerald-500' :
+                        sprint.status === 'active'    ? 'bg-blue-500' : 'bg-gray-300',
+                      ]"
+                      :style="{ width: Math.round(((sprint.stories_done_count || 0) / sprint.user_stories_count) * 100) + '%' }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-6">
+            <Milestone class="w-8 h-8 text-gray-300 mx-auto mb-2" :stroke-width="1.5" />
+            <p class="text-sm text-gray-400">Aucun sprint planifié</p>
+          </div>
         </div>
       </div>
 
@@ -307,10 +380,10 @@
       <!-- ═══════════════════════════════════════ -->
       <div class="grid lg:grid-cols-2 gap-6">
         <!-- Engagements -->
-        <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-5 sm:p-6">
           <div class="flex items-center gap-2 mb-5">
             <Handshake class="w-4 h-4 text-gray-400" :stroke-width="2" />
-            <h3 class="text-sm font-semibold text-gray-900">Nos Engagements</h3>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Nos Engagements</h3>
           </div>
           <div class="space-y-3">
             <div
@@ -322,30 +395,30 @@
                 <component :is="eng.icon" :class="['w-4 h-4', eng.color]" :stroke-width="1.8" />
               </div>
               <div class="min-w-0">
-                <h4 class="text-sm font-medium text-gray-900">{{ eng.title }}</h4>
-                <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ eng.description }}</p>
+                <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ eng.title }}</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{{ eng.description }}</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Tech Stack -->
-        <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-5 sm:p-6">
           <div class="flex items-center gap-2 mb-5">
             <Server class="w-4 h-4 text-gray-400" :stroke-width="2" />
-            <h3 class="text-sm font-semibold text-gray-900">Stack Technique</h3>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Stack Technique</h3>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div
               v-for="(tech, i) in techStack"
               :key="i"
-              class="text-center p-4 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50/50 transition-all"
+              class="text-center p-4 rounded-lg border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-all"
             >
               <div :class="['w-10 h-10 mx-auto rounded-lg flex items-center justify-center mb-2', tech.bg]">
                 <component :is="tech.icon" :class="['w-5 h-5', tech.color]" :stroke-width="1.8" />
               </div>
-              <h4 class="text-sm font-medium text-gray-900">{{ tech.name }}</h4>
-              <p class="text-[11px] text-gray-500 mt-0.5">{{ tech.role }}</p>
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ tech.name }}</h4>
+              <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{{ tech.role }}</p>
             </div>
           </div>
         </div>
@@ -364,17 +437,17 @@ import {
   Route, Handshake, Server, Kanban,
   Eye, MessageSquare, RefreshCcw, Lock,
   Code, Globe, Database, Bot,
-  UserCircle, BookOpen, Rocket, ClipboardCheck,
+  BookOpen, Milestone,
   ListChecks, CheckCircle2, BarChart3,
 } from 'lucide-vue-next';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import RoadmapTimeline from '@/Components/RoadmapTimeline.vue';
 
 const props = defineProps({
   streams: Array,
   storyCounts: Object,
   recentStories: Array,
+  sprints: Array,
   teamCount: Number,
   personaCount: Number,
 });
@@ -455,14 +528,13 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 }
 
-/* ── Static data (Roadmap, Engagements, Tech) ── */
+function formatSprintDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+}
 
-const roadmapSteps = [
-  { title: 'Définition des Personas', description: 'Identifier les utilisateurs clés et comprendre leurs besoins.', icon: UserCircle, tag: 'Découverte', active: true },
-  { title: 'Rédaction des User Stories', description: 'Formuler les besoins sous forme "En tant que…"', icon: BookOpen, tag: 'Cadrage', active: true },
-  { title: 'Développement par Sprints', description: 'Cycles de 2 semaines avec livraison incrémentale.', icon: Rocket, tag: 'Build', active: false },
-  { title: 'Validation sur l\'Intranet', description: 'Feedback en temps réel, ajustements rapides.', icon: ClipboardCheck, tag: 'Review', active: false },
-];
+/* ── Static data (Engagements, Tech) ── */
 
 const engagements = [
   { icon: Eye, title: 'Transparence totale', description: 'Suivi en temps réel de l\'avancement sur cet Intranet.', bg: 'bg-blue-50', color: 'text-blue-600' },

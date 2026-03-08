@@ -10,8 +10,8 @@
               Admin
             </span>
           </div>
-          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Gestion des Utilisateurs</h1>
-          <p class="text-sm text-gray-500 mt-0.5">RBAC — Contrôle d'accès basé sur les rôles</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Gestion des Utilisateurs</h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">RBAC — Contrôle d'accès basé sur les rôles</p>
         </div>
         <button
           @click="openCreateModal()"
@@ -24,30 +24,30 @@
 
       <!-- Stats cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-white rounded-xl border border-gray-200/80 p-4">
-          <div class="text-2xl font-bold text-gray-900">{{ users.length }}</div>
-          <div class="text-xs text-gray-500">Total utilisateurs</div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-4">
+          <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ users.length }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Total utilisateurs</div>
         </div>
         <div
           v-for="(label, role) in roles"
           :key="role"
-          class="bg-white rounded-xl border border-gray-200/80 p-4"
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-4"
         >
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: roleColor(role) }"></span>
-            <div class="text-2xl font-bold text-gray-900">{{ users.filter(u => u.role === role).length }}</div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ users.filter(u => u.role === role).length }}</div>
           </div>
-          <div class="text-xs text-gray-500">{{ label }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">{{ label }}</div>
         </div>
       </div>
 
       <!-- Users table -->
-      <div class="bg-white rounded-xl border border-gray-200/80 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 overflow-hidden">
         <!-- Desktop table -->
         <div class="hidden sm:block overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="border-b border-gray-100">
+              <tr class="border-b border-gray-100 dark:border-gray-700">
                 <th class="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">Utilisateur</th>
                 <th class="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">Email</th>
                 <th class="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">Rôle</th>
@@ -65,10 +65,10 @@
                     >
                       {{ user.name.charAt(0).toUpperCase() }}
                     </div>
-                    <span class="text-sm font-medium text-gray-900">{{ user.name }}</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ user.name }}</span>
                   </div>
                 </td>
-                <td class="px-5 py-3.5 text-sm text-gray-600">{{ user.email }}</td>
+                <td class="px-5 py-3.5 text-sm text-gray-600 dark:text-gray-400">{{ user.email }}</td>
                 <td class="px-5 py-3.5">
                   <span
                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold"
@@ -152,9 +152,9 @@
     <Teleport to="body">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 pt-16 sm:pt-4">
         <div class="absolute inset-0 bg-black/40" @click="closeModal"></div>
-        <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
-          <div class="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between rounded-t-xl z-10">
-            <h3 class="text-base font-bold text-gray-900">
+        <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
+          <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-5 py-4 flex items-center justify-between rounded-t-xl z-10">
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">
               {{ editingUser ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}
             </h3>
             <button @click="closeModal" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">

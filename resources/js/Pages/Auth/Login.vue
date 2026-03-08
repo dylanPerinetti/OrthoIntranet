@@ -1,22 +1,22 @@
 <template>
   <GuestLayout>
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-8">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/80 dark:border-gray-700/80 shadow-sm p-8">
       <div class="mb-6">
-        <h2 class="text-2xl font-bold text-slate-900">Connexion</h2>
-        <p class="text-sm text-slate-500 mt-1">Accédez à votre espace OrthoIntranet</p>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Connexion</h2>
+        <p class="text-sm text-slate-500 dark:text-gray-400 mt-1">Accédez à votre espace OrthoIntranet</p>
       </div>
 
       <form @submit.prevent="submit" class="space-y-5">
         <!-- Email -->
         <div>
-          <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">Adresse e-mail</label>
+          <label for="email" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">Adresse e-mail</label>
           <input
             id="email"
             v-model="form.email"
             type="email"
             required
             autofocus
-            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
             placeholder="dr.andre@cabinet.fr"
           />
           <p v-if="form.errors.email" class="mt-1 text-sm text-red-600">{{ form.errors.email }}</p>
@@ -24,13 +24,13 @@
 
         <!-- Password -->
         <div>
-          <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">Mot de passe</label>
+          <label for="password" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">Mot de passe</label>
           <input
             id="password"
             v-model="form.password"
             type="password"
             required
-            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
             placeholder="••••••••"
           />
           <p v-if="form.errors.password" class="mt-1 text-sm text-red-600">{{ form.errors.password }}</p>

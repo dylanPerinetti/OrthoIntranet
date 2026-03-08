@@ -4,11 +4,11 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">User Stories</h1>
-          <p class="text-sm text-gray-500 mt-0.5">Toutes les User Stories par activité et persona</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">User Stories</h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Toutes les User Stories par activité et persona</p>
         </div>
         <div class="flex items-center gap-2 text-xs text-gray-500">
-          <span class="tabular-nums font-semibold text-gray-900">{{ stories.length }}</span>
+          <span class="tabular-nums font-semibold text-gray-900 dark:text-white">{{ stories.length }}</span>
           stories au total
         </div>
       </div>
@@ -86,7 +86,7 @@
         <div
           v-for="story in filteredStories"
           :key="story.id"
-          class="bg-white rounded-xl border border-gray-200/80 p-4 sm:p-5 hover:shadow-sm transition-shadow"
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-4 sm:p-5 hover:shadow-sm transition-shadow"
         >
           <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
             <!-- Left: persona avatar -->
@@ -134,11 +134,11 @@
                 </span>
               </div>
 
-              <h3 class="text-sm font-semibold text-gray-900 leading-snug">{{ story.title }}</h3>
-              <p v-if="story.description" class="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">{{ story.description }}</p>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{{ story.title }}</h3>
+              <p v-if="story.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed line-clamp-2">{{ story.description }}</p>
 
               <!-- Acceptance criteria preview -->
-              <div v-if="story.acceptance_criteria" class="mt-2 p-2.5 bg-gray-50 rounded-lg border border-gray-100">
+              <div v-if="story.acceptance_criteria" class="mt-2 p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
                 <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Critères d'acceptation</p>
                 <p class="text-[11px] text-gray-600 leading-relaxed whitespace-pre-line line-clamp-3">{{ story.acceptance_criteria }}</p>
               </div>

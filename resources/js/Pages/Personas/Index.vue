@@ -4,8 +4,8 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Persona Types</h1>
-          <p class="text-sm text-gray-500 mt-0.5">Les profils utilisateurs du projet — "En tant que…"</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Persona Types</h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Les profils utilisateurs du projet — "En tant que…"</p>
         </div>
         <button
           @click="openCreateModal()"
@@ -21,7 +21,7 @@
         <div
           v-for="persona in personas"
           :key="persona.id"
-          class="bg-white rounded-xl border border-gray-200/80 overflow-hidden hover:shadow-md hover:border-gray-300/80 transition-all duration-200 group"
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 overflow-hidden hover:shadow-md hover:border-gray-300/80 dark:hover:border-gray-600/80 transition-all duration-200 group"
         >
           <!-- Top accent bar -->
           <div class="h-1 w-full" :style="{ backgroundColor: persona.avatar_color }"></div>
@@ -37,8 +37,8 @@
                   {{ persona.name.charAt(0).toUpperCase() }}
                 </div>
                 <div>
-                  <h3 class="text-[15px] font-semibold text-gray-900">{{ persona.name }}</h3>
-                  <p class="text-xs text-gray-500">{{ persona.role }}</p>
+                  <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ persona.name }}</h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">{{ persona.role }}</p>
                 </div>
               </div>
               <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -52,7 +52,7 @@
             </div>
 
             <!-- Description -->
-            <p v-if="persona.description" class="text-[13px] text-gray-600 leading-relaxed mb-4 line-clamp-2">
+            <p v-if="persona.description" class="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-2">
               {{ persona.description }}
             </p>
 
@@ -84,7 +84,7 @@
             </div>
 
             <!-- Footer -->
-            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
               <span
                 class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-semibold"
                 :style="{ backgroundColor: persona.avatar_color + '14', color: persona.avatar_color }"
@@ -120,9 +120,9 @@
     <Teleport to="body">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 pt-16 sm:pt-4">
         <div class="absolute inset-0 bg-black/40" @click="closeModal"></div>
-        <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
-          <div class="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between rounded-t-xl z-10">
-            <h3 class="text-base font-bold text-gray-900">
+        <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+          <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-5 py-4 flex items-center justify-between rounded-t-xl z-10">
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">
               {{ editingPersona ? 'Modifier le Persona' : 'Nouveau Persona' }}
             </h3>
             <button @click="closeModal" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">

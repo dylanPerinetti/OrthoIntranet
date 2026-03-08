@@ -19,47 +19,47 @@
               Stream
             </span>
           </div>
-          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{{ stream.name }}</h1>
-          <p class="text-sm text-gray-500 mt-0.5">{{ stream.description }}</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{{ stream.name }}</h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ stream.description }}</p>
         </div>
       </div>
 
       <!-- Stats row -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-white rounded-xl border border-gray-200/80 p-4">
-          <div class="text-2xl font-bold text-gray-900">{{ stories.length }}</div>
-          <div class="text-xs text-gray-500">User Stories</div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-4">
+          <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ stories.length }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">User Stories</div>
         </div>
-        <div class="bg-white rounded-xl border border-gray-200/80 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-4">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-gray-400"></span>
-            <span class="text-2xl font-bold text-gray-900">{{ statusCounts.todo }}</span>
+            <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ statusCounts.todo }}</span>
           </div>
-          <div class="text-xs text-gray-500">À faire</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">À faire</div>
         </div>
-        <div class="bg-white rounded-xl border border-gray-200/80 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-4">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-            <span class="text-2xl font-bold text-gray-900">{{ statusCounts.in_progress }}</span>
+            <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ statusCounts.in_progress }}</span>
           </div>
-          <div class="text-xs text-gray-500">En cours</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">En cours</div>
         </div>
-        <div class="bg-white rounded-xl border border-gray-200/80 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-4">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span class="text-2xl font-bold text-gray-900">{{ statusCounts.done }}</span>
+            <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ statusCounts.done }}</span>
           </div>
-          <div class="text-xs text-gray-500">Terminé</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Terminé</div>
         </div>
       </div>
 
       <!-- Progress bar -->
-      <div class="bg-white rounded-xl border border-gray-200/80 p-5">
+      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-5">
         <div class="flex items-center justify-between text-sm mb-3">
-          <span class="font-medium text-gray-700">Progression</span>
-          <span class="font-bold text-gray-900">{{ progressPercent }}%</span>
+          <span class="font-medium text-gray-700 dark:text-gray-300">Progression</span>
+          <span class="font-bold text-gray-900 dark:text-white">{{ progressPercent }}%</span>
         </div>
-        <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+        <div class="w-full h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
           <div
             class="h-full rounded-full transition-all duration-700"
             :style="{ width: progressPercent + '%', backgroundColor: stream.color }"
@@ -68,9 +68,9 @@
       </div>
 
       <!-- Stories list -->
-      <div class="bg-white rounded-xl border border-gray-200/80 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-gray-900">User Stories</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">User Stories</h3>
           <div class="flex items-center gap-2">
             <button
               v-for="f in filters"
@@ -110,8 +110,8 @@
                     {{ statusLabel(story.status) }}
                   </span>
                 </div>
-                <h4 class="text-sm font-semibold text-gray-900">{{ story.title }}</h4>
-                <p v-if="story.description" class="text-xs text-gray-500 mt-0.5 line-clamp-2">{{ story.description }}</p>
+                <h4 class="text-sm font-semibold text-gray-900 dark:text-white">{{ story.title }}</h4>
+                <p v-if="story.description" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{{ story.description }}</p>
               </div>
 
               <div class="flex items-center gap-3 flex-shrink-0">

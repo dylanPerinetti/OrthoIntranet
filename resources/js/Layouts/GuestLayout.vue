@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#f8f9fb] flex">
+  <div class="min-h-screen bg-[#f8f9fb] dark:bg-gray-900 flex">
     <!-- Left decorative panel (hidden on mobile) -->
     <div class="hidden lg:flex lg:w-1/2 xl:w-[55%] bg-[#1a1f36] relative overflow-hidden items-center justify-center">
       <!-- Decorative grid -->
@@ -39,7 +39,7 @@
           <Stethoscope class="w-5 h-5 text-white" :stroke-width="2" />
         </div>
         <div>
-          <h1 class="text-lg font-bold text-gray-900 tracking-tight">OrthoIntranet</h1>
+          <h1 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">OrthoIntranet</h1>
           <p class="text-xs text-gray-400 -mt-0.5">Plateforme de Pilotage IA</p>
         </div>
       </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Persona;
+use App\Models\Sprint;
 use App\Models\Stream;
 use App\Models\User;
 use App\Models\UserStory;
@@ -34,10 +35,16 @@ class DashboardController extends Controller
             ->take(5)
             ->get(['id', 'title', 'status', 'priority', 'stream_id', 'persona_id', 'assigned_to', 'created_at']);
 
+        $sprints = Sprint::withCount([
+            'userStories',
+            'userStories as stories_done_count' => fn ($q) => $q->where('status', 'done'),
+        ])->orderBy('number')->get(['id', 'name', 'number', 'goal', 'start_date', 'end_date', 'status']);
+
         return Inertia::render('Dashboard', [
             'streams'       => $streams,
             'storyCounts'   => $storyCounts,
             'recentStories' => $recentStories,
+            'sprints'       => $sprints,
             'teamCount'     => User::count(),
             'personaCount'  => Persona::count(),
         ]);

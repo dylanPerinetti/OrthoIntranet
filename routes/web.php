@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SprintController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\StreamController;
 use App\Http\Controllers\UserStoryController;
@@ -48,6 +49,17 @@ Route::middleware('auth')->group(function () {
 
     // User Stories (vue liste)
     Route::get('/user-stories', [UserStoryListController::class, 'index'])->name('user-stories.index');
+
+    // Réglages
+    Route::get('/settings', function () {
+        return \Inertia\Inertia::render('Settings/Index');
+    })->name('settings.index');
+
+    // Sprints / Roadmap
+    Route::get('/sprints', [SprintController::class, 'index'])->name('sprints.index');
+    Route::post('/sprints', [SprintController::class, 'store'])->name('sprints.store');
+    Route::put('/sprints/{sprint}', [SprintController::class, 'update'])->name('sprints.update');
+    Route::delete('/sprints/{sprint}', [SprintController::class, 'destroy'])->name('sprints.destroy');
 
     /*
     |----------------------------------------------------------------------

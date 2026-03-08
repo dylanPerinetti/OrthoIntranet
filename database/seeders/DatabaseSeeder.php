@@ -46,6 +46,7 @@ class DatabaseSeeder extends Seeder
             StreamSeeder::class,
             UserStorySeeder::class,
             PersonaSeeder::class,
+            SprintSeeder::class,
         ]);
     }
 }
