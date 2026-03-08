@@ -88,7 +88,7 @@
                 'relative z-10 w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all',
                 sprint.status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' :
                 sprint.status === 'active'    ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-200 ring-4 ring-blue-100' :
-                                                'bg-white border-gray-300 text-gray-500',
+                                                'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-500 text-gray-500 dark:text-gray-300',
               ]"
             >
               <Check v-if="sprint.status === 'completed'" class="w-5 h-5" :stroke-width="2.5" />
@@ -97,10 +97,10 @@
 
             <!-- Label -->
             <div class="mt-3 text-center max-w-[160px]">
-              <p :class="['text-sm font-semibold', sprint.status === 'active' ? 'text-gray-900' : 'text-gray-600']">
+              <p :class="['text-sm font-semibold', sprint.status === 'active' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300']">
                 {{ sprint.name }}
               </p>
-              <p class="text-[11px] text-gray-400 mt-1">
+              <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
                 {{ formatDate(sprint.start_date) }} — {{ formatDate(sprint.end_date) }}
               </p>
               <span
@@ -125,7 +125,7 @@
           v-for="sprint in sprints"
           :key="sprint.id"
           :class="[
-            'bg-white rounded-xl border overflow-hidden transition-all',
+            'bg-white dark:bg-gray-800 rounded-xl border overflow-hidden transition-all',
             sprint.status === 'active' ? 'border-blue-200 dark:border-blue-800 shadow-sm' : 'border-gray-200/80 dark:border-gray-700/80',
           ]"
         >
@@ -133,16 +133,16 @@
           <div
             :class="[
               'px-5 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3',
-              sprint.status === 'active' ? 'bg-blue-50/50' : 'bg-gray-50/50',
+              sprint.status === 'active' ? 'bg-blue-50/50 dark:bg-blue-900/20' : 'bg-gray-50/50 dark:bg-gray-700/30',
             ]"
           >
             <div class="flex items-center gap-3">
               <div
                 :class="[
                   'w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold',
-                  sprint.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                  sprint.status === 'active'    ? 'bg-blue-100 text-blue-700' :
-                                                  'bg-gray-100 text-gray-500',
+                  sprint.status === 'completed' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400' :
+                  sprint.status === 'active'    ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400' :
+                                                  'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
                 ]"
               >
                 S{{ sprint.number }}
@@ -159,9 +159,9 @@
                     {{ statusLabels[sprint.status] }}
                   </span>
                 </div>
-                <p class="text-xs text-gray-500 mt-0.5">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   {{ formatDate(sprint.start_date) }} → {{ formatDate(sprint.end_date) }}
-                  <span v-if="daysInfo(sprint)" class="ml-1 text-gray-400">· {{ daysInfo(sprint) }}</span>
+                  <span v-if="daysInfo(sprint)" class="ml-1 text-gray-400 dark:text-gray-500">· {{ daysInfo(sprint) }}</span>
                 </p>
               </div>
             </div>
@@ -169,14 +169,14 @@
             <div class="flex items-center gap-2">
               <button
                 @click="openEdit(sprint)"
-                class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                class="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                 title="Modifier"
               >
                 <Pencil class="w-4 h-4" :stroke-width="1.8" />
               </button>
               <button
                 @click="deleteSprint(sprint)"
-                class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                 title="Supprimer"
               >
                 <Trash2 class="w-4 h-4" :stroke-width="1.8" />
@@ -187,14 +187,14 @@
           <!-- Sprint body -->
           <div class="px-5 sm:px-6 py-5">
             <!-- Goal -->
-            <p v-if="sprint.goal" class="text-sm text-gray-600 leading-relaxed mb-4">
-              <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-1">Objectif</span>
+            <p v-if="sprint.goal" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 block mb-1">Objectif</span>
               {{ sprint.goal }}
             </p>
 
             <!-- Progress -->
             <div class="mb-4">
-              <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+              <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
                 <span>{{ sprint.user_stories_count }} stories · {{ sprint.stories_done_count }} terminée{{ sprint.stories_done_count > 1 ? 's' : '' }}</span>
                 <span class="font-semibold text-gray-700 dark:text-gray-300">{{ sprintProgress(sprint) }}%</span>
               </div>
@@ -212,7 +212,7 @@
             </div>
 
             <!-- Mini status breakdown -->
-            <div class="flex items-center gap-4 text-xs text-gray-500 mb-5">
+            <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-5">
               <span class="flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-sm bg-gray-300"></span>
                 {{ sprint.stories_todo_count }} à faire
@@ -277,10 +277,10 @@
       </div>
 
       <!-- Empty state -->
-      <div v-if="!sprints.length" class="bg-white rounded-xl border border-gray-200/80 p-12 text-center">
-        <Milestone class="w-12 h-12 text-gray-300 mx-auto mb-3" :stroke-width="1.5" />
-        <h3 class="text-lg font-semibold text-gray-900 mb-1">Aucun sprint</h3>
-        <p class="text-sm text-gray-500 mb-4">Créez votre premier sprint pour commencer à organiser la roadmap.</p>
+      <div v-if="!sprints.length" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 p-12 text-center">
+        <Milestone class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" :stroke-width="1.5" />
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Aucun sprint</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Créez votre premier sprint pour commencer à organiser la roadmap.</p>
         <button
           @click="openCreate()"
           class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#1a1f36] text-white text-sm font-medium rounded-lg hover:bg-[#252b45] transition-colors"
@@ -299,11 +299,11 @@
             <div class="absolute inset-0 bg-black/40" @click="showModal = false"></div>
             <div class="relative w-full max-w-lg bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
               <!-- Modal header -->
-              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                <h3 class="text-base font-semibold text-gray-900">
+              <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-700/30">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">
                   {{ editing ? 'Modifier le sprint' : 'Nouveau Sprint' }}
                 </h3>
-                <button @click="showModal = false" class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                <button @click="showModal = false" class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                   <X class="w-4 h-4" :stroke-width="2" />
                 </button>
               </div>
@@ -311,32 +311,32 @@
               <!-- Modal body -->
               <form @submit.prevent="submitForm" class="p-6 space-y-4">
                 <div>
-                  <label class="block text-xs font-medium text-gray-700 mb-1.5">Nom du sprint *</label>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nom du sprint *</label>
                   <input
                     v-model="form.name"
                     type="text"
                     placeholder="Sprint 1 — Fondations"
-                    class="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                    class="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
                   />
                   <p v-if="form.errors.name" class="text-xs text-red-500 mt-1">{{ form.errors.name }}</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Numéro *</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Numéro *</label>
                     <input
                       v-model="form.number"
                       type="number"
                       min="1"
-                      class="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                      class="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
                     />
                     <p v-if="form.errors.number" class="text-xs text-red-500 mt-1">{{ form.errors.number }}</p>
                   </div>
                   <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Statut *</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Statut *</label>
                     <select
                       v-model="form.status"
-                      class="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                      class="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
                     >
                       <option value="planned">Planifié</option>
                       <option value="active">Actif</option>
@@ -346,42 +346,42 @@
                 </div>
 
                 <div>
-                  <label class="block text-xs font-medium text-gray-700 mb-1.5">Objectif du sprint</label>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Objectif du sprint</label>
                   <textarea
                     v-model="form.goal"
                     rows="3"
                     placeholder="Quel est l'objectif principal de ce sprint ?"
-                    class="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all resize-none"
+                    class="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all resize-none"
                   ></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Date de début *</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Date de début *</label>
                     <input
                       v-model="form.start_date"
                       type="date"
-                      class="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                      class="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
                     />
                     <p v-if="form.errors.start_date" class="text-xs text-red-500 mt-1">{{ form.errors.start_date }}</p>
                   </div>
                   <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Date de fin *</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Date de fin *</label>
                     <input
                       v-model="form.end_date"
                       type="date"
-                      class="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                      class="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
                     />
                     <p v-if="form.errors.end_date" class="text-xs text-red-500 mt-1">{{ form.errors.end_date }}</p>
                   </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
                   <button
                     type="button"
                     @click="showModal = false"
-                    class="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                    class="px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     Annuler
                   </button>
@@ -423,9 +423,9 @@ const props = defineProps({
 /* ── Status display ── */
 const statusLabels = { planned: 'Planifié', active: 'Actif', completed: 'Terminé' };
 const statusClasses = {
-  planned:   'bg-gray-100 text-gray-600',
-  active:    'bg-blue-50 text-blue-700',
-  completed: 'bg-emerald-50 text-emerald-700',
+  planned:   'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
+  active:    'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+  completed: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
 };
 const statusDots = {
   planned:   'bg-gray-400',
