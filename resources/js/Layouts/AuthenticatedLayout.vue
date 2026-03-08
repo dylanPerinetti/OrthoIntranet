@@ -25,7 +25,7 @@
     <!-- ══════════════════════════════════════════ -->
     <!-- MAIN CONTENT                               -->
     <!-- ══════════════════════════════════════════ -->
-    <div class="flex-1 lg:pl-64 xl:pl-72 flex flex-col min-h-screen">
+    <div class="flex-1 lg:pl-64 xl:pl-72 flex flex-col min-h-screen min-w-0">
       <!-- Top bar (mobile + breadcrumb) -->
       <header class="sticky top-0 z-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200/60 dark:border-gray-700/60">
         <div class="flex items-center gap-4 px-4 sm:px-6 lg:px-8 h-16">
