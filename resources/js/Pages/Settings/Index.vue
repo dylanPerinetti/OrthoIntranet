@@ -80,6 +80,49 @@
                 <CheckCircle2 class="w-5 h-5 text-blue-500" :stroke-width="2" />
               </div>
             </button>
+
+            <!-- System -->
+            <button
+              @click="setTheme('system')"
+              :class="[
+                'relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all',
+                theme === 'system'
+                  ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20'
+                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500',
+              ]"
+            >
+              <div class="w-full h-20 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600 flex">
+                <!-- Left half: light -->
+                <div class="w-1/2 bg-white">
+                  <div class="h-2 bg-[#1a1f36]"></div>
+                  <div class="flex h-[calc(100%-0.5rem)]">
+                    <div class="w-3 bg-[#1a1f36]"></div>
+                    <div class="flex-1 p-1 space-y-1">
+                      <div class="h-1.5 w-5 bg-gray-200 rounded"></div>
+                      <div class="h-1.5 w-4 bg-gray-100 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Right half: dark -->
+                <div class="w-1/2 bg-gray-900">
+                  <div class="h-2 bg-gray-950"></div>
+                  <div class="flex h-[calc(100%-0.5rem)]">
+                    <div class="w-3 bg-gray-950"></div>
+                    <div class="flex-1 p-1 space-y-1">
+                      <div class="h-1.5 w-5 bg-gray-700 rounded"></div>
+                      <div class="h-1.5 w-4 bg-gray-800 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <Monitor class="w-4 h-4 text-gray-500 dark:text-gray-400" :stroke-width="2" />
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Système</span>
+              </div>
+              <div v-if="theme === 'system'" class="absolute top-2 right-2">
+                <CheckCircle2 class="w-5 h-5 text-blue-500" :stroke-width="2" />
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -93,11 +136,40 @@
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Profil</h3>
         </div>
 
-        <div class="flex items-center gap-4 mb-6">
-          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-lg font-bold">
-            {{ user.name.charAt(0).toUpperCase() }}
+        <div class="flex items-start gap-5 mb-6">
+          <!-- Avatar avec upload -->
+          <div class="relative group">
+            <div
+              class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer"
+              @click="fileInput?.click()"
+            >
+              <img
+                v-if="avatarDisplay"
+                :src="avatarDisplay"
+                :alt="user.name"
+                class="w-full h-full object-cover"
+              />
+              <div
+                v-else
+                class="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xl font-bold"
+              >
+                {{ user.name.charAt(0).toUpperCase() }}
+              </div>
+              <!-- Overlay au hover -->
+              <div class="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <Camera class="w-5 h-5 text-white" :stroke-width="2" />
+              </div>
+            </div>
+            <input
+              ref="fileInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="onFileSelected"
+            />
           </div>
-          <div>
+
+          <div class="flex-1 min-w-0">
             <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ user.name }}</h4>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</p>
             <span :class="[
@@ -108,6 +180,35 @@
             ]">
               {{ { admin: 'Administrateur', secretaire: 'Secrétaire', assistante: 'Assistante' }[user.role] }}
             </span>
+
+            <!-- Boutons upload / supprimer -->
+            <div class="flex items-center gap-2 mt-3">
+              <button
+                v-if="selectedFile"
+                @click="uploadPhoto"
+                :disabled="uploading"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
+              >
+                <Upload class="w-3.5 h-3.5" :stroke-width="2" />
+                {{ uploading ? 'Envoi…' : 'Enregistrer' }}
+              </button>
+              <button
+                v-else
+                @click="fileInput?.click()"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+              >
+                <Camera class="w-3.5 h-3.5" :stroke-width="2" />
+                Changer la photo
+              </button>
+              <button
+                v-if="user.avatar && !selectedFile"
+                @click="removePhoto"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+              >
+                <Trash2 class="w-3.5 h-3.5" :stroke-width="2" />
+                Supprimer
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -149,11 +250,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { usePage, router } from '@inertiajs/vue3';
 import {
-  Palette, Sun, Moon, CheckCircle2,
-  UserCircle, Info,
+  Palette, Sun, Moon, Monitor, CheckCircle2,
+  UserCircle, Info, Upload, Camera, Trash2,
 } from 'lucide-vue-next';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -163,4 +264,48 @@ const page = usePage();
 const user = computed(() => page.props.auth.user);
 
 const { theme, set: setTheme } = useTheme();
+
+/* ── Photo de profil ── */
+const fileInput = ref(null);
+const previewUrl = ref(null);
+const selectedFile = ref(null);
+const uploading = ref(false);
+
+function onFileSelected(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  selectedFile.value = file;
+  previewUrl.value = URL.createObjectURL(file);
+}
+
+function uploadPhoto() {
+  if (!selectedFile.value) return;
+  uploading.value = true;
+  const formData = new FormData();
+  formData.append('avatar', selectedFile.value);
+  router.post('/settings/avatar', formData, {
+    forceFormData: true,
+    preserveScroll: true,
+    onSuccess: () => {
+      selectedFile.value = null;
+      previewUrl.value = null;
+      uploading.value = false;
+    },
+    onError: () => {
+      uploading.value = false;
+    },
+  });
+}
+
+function removePhoto() {
+  router.delete('/settings/avatar', {
+    preserveScroll: true,
+  });
+}
+
+const avatarDisplay = computed(() => {
+  if (previewUrl.value) return previewUrl.value;
+  if (user.value.avatar) return '/storage/' + user.value.avatar;
+  return null;
+});
 </script>

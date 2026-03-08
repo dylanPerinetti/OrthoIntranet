@@ -50,9 +50,10 @@
             <button
               @click="toggleTheme"
               class="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-              :title="theme === 'dark' ? 'Mode clair' : 'Mode sombre'"
+              :title="theme === 'dark' ? 'Mode système' : theme === 'light' ? 'Mode sombre' : 'Mode clair'"
             >
               <Moon v-if="theme === 'light'" class="w-4 h-4" :stroke-width="2" />
+              <Monitor v-else-if="theme === 'dark'" class="w-4 h-4" :stroke-width="2" />
               <Sun v-else class="w-4 h-4" :stroke-width="2" />
             </button>
 
@@ -65,9 +66,12 @@
             <div class="lg:hidden relative" ref="mobileMenuRef">
               <button
                 @click="showMobileMenu = !showMobileMenu"
-                class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold"
+                class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0"
               >
-                {{ auth.user.name.charAt(0).toUpperCase() }}
+                <img v-if="auth.user.avatar" :src="'/storage/' + auth.user.avatar" :alt="auth.user.name" class="w-full h-full object-cover" />
+                <div v-else class="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                  {{ auth.user.name.charAt(0).toUpperCase() }}
+                </div>
               </button>
               <div
                 v-show="showMobileMenu"
@@ -121,7 +125,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
-import { Menu, ChevronRight, LogOut, Moon, Sun, Settings as SettingsIcon } from 'lucide-vue-next';
+import { Menu, ChevronRight, LogOut, Moon, Sun, Monitor, Settings as SettingsIcon } from 'lucide-vue-next';
 import SidebarContent from '@/Components/SidebarContent.vue';
 import { useTheme } from '@/composables/useTheme.js';
 

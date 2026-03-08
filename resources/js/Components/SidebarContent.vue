@@ -116,8 +116,11 @@
       </button>
 
       <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-          {{ auth.user.name.charAt(0).toUpperCase() }}
+        <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+          <img v-if="auth.user.avatar" :src="'/storage/' + auth.user.avatar" :alt="auth.user.name" class="w-full h-full object-cover" />
+          <div v-else class="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+            {{ auth.user.name.charAt(0).toUpperCase() }}
+          </div>
         </div>
         <div class="flex-1 min-w-0">
           <p class="text-[13px] font-medium text-gray-200 truncate">{{ auth.user.name }}</p>

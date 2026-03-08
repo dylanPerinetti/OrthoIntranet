@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\StreamController;
@@ -54,6 +55,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', function () {
         return \Inertia\Inertia::render('Settings/Index');
     })->name('settings.index');
+
+    // Profil — avatar
+    Route::post('/settings/avatar', [ProfileController::class, 'updateAvatar'])->name('settings.avatar.update');
+    Route::delete('/settings/avatar', [ProfileController::class, 'destroyAvatar'])->name('settings.avatar.destroy');
 
     // Sprints / Roadmap
     Route::get('/sprints', [SprintController::class, 'index'])->name('sprints.index');
