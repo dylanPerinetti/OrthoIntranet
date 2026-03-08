@@ -67,6 +67,36 @@
           </button>
         </div>
       </div>
+
+      <div class="!mt-6">
+        <p class="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Gestion</p>
+        <div class="space-y-0.5">
+          <button
+            @click="$emit('navigate', '/personas')"
+            :class="[
+              'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all',
+              isActive('/personas')
+                ? 'bg-white/[0.08] text-white'
+                : 'text-gray-400 hover:bg-white/[0.04] hover:text-gray-200',
+            ]"
+          >
+            <UserCircle2 :class="['w-[18px] h-[18px] flex-shrink-0', isActive('/personas') ? 'text-blue-400' : 'text-gray-500']" :stroke-width="1.8" />
+            <span class="truncate">Persona Types</span>
+          </button>
+          <button
+            @click="$emit('navigate', '/user-stories')"
+            :class="[
+              'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all',
+              isActive('/user-stories')
+                ? 'bg-white/[0.08] text-white'
+                : 'text-gray-400 hover:bg-white/[0.04] hover:text-gray-200',
+            ]"
+          >
+            <BookOpen :class="['w-[18px] h-[18px] flex-shrink-0', isActive('/user-stories') ? 'text-blue-400' : 'text-gray-500']" :stroke-width="1.8" />
+            <span class="truncate">User Stories</span>
+          </button>
+        </div>
+      </div>
     </nav>
 
     <!-- User section -->
@@ -92,7 +122,7 @@
 </template>
 
 <script setup>
-import { Stethoscope, LogOut, LayoutDashboard, Kanban, ShieldCheck } from 'lucide-vue-next';
+import { Stethoscope, LogOut, LayoutDashboard, Kanban, ShieldCheck, UserCircle2, BookOpen } from 'lucide-vue-next';
 
 defineProps({
   auth: Object,

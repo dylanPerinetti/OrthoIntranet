@@ -133,6 +133,8 @@ const currentPageTitle = computed(() => {
     const names = { operationnel: 'Opérationnel', marketing: 'Marketing', 'expertise-dr-z': 'Expertise Dr Z' };
     return names[slug] || 'Stream';
   }
+  if (page.url.startsWith('/personas')) return 'Persona Types';
+  if (page.url.startsWith('/user-stories')) return 'User Stories';
   return 'Page';
 });
 

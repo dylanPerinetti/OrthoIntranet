@@ -58,11 +58,9 @@
         </button>
       </form>
 
-      <p class="mt-6 text-center text-sm text-slate-500">
-        Pas encore de compte ?
-        <a href="/register" class="text-blue-600 font-medium hover:underline" @click.prevent="$inertia.visit('/register')">
-          Créer un compte
-        </a>
+      <p class="mt-6 text-center text-xs text-slate-400">
+        Intranet réservé au personnel du cabinet.<br />
+        Contactez votre administrateur pour obtenir un accès.
       </p>
     </div>
   </GuestLayout>

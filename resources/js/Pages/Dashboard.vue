@@ -11,7 +11,7 @@
       </div>
 
       <!-- ═══════════════════════════════════════ -->
-      <!-- KPI CARDS                                -->
+      <!-- KPI CARDS (dynamiques)                   -->
       <!-- ═══════════════════════════════════════ -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div
@@ -24,13 +24,13 @@
               <component :is="kpi.icon" :class="['w-[18px] h-[18px]', kpi.color]" :stroke-width="1.8" />
             </div>
             <span
-              v-if="kpi.trend"
+              v-if="kpi.badge"
               :class="[
                 'text-[11px] font-semibold px-1.5 py-0.5 rounded',
-                kpi.trendUp ? 'text-emerald-700 bg-emerald-50' : 'text-gray-500 bg-gray-50',
+                kpi.badgeClass,
               ]"
             >
-              {{ kpi.trend }}
+              {{ kpi.badge }}
             </span>
           </div>
           <div class="text-2xl font-bold text-gray-900">{{ kpi.value }}</div>
@@ -139,29 +139,159 @@
       </div>
 
       <!-- ═══════════════════════════════════════ -->
-      <!-- STREAMS SECTION                          -->
+      <!-- STREAMS SECTION (dynamique depuis DB)    -->
       <!-- ═══════════════════════════════════════ -->
       <div>
         <div class="flex items-center justify-between mb-5">
           <div>
             <h2 class="text-lg font-bold text-gray-900">Axes d'Activités</h2>
-            <p class="text-sm text-gray-500">Les 3 piliers de la transformation digitale</p>
+            <p class="text-sm text-gray-500">{{ streams.length }} axes de transformation digitale</p>
           </div>
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-          <StreamCard
-            v-for="stream in streamCards"
+          <a
+            v-for="stream in streams"
             :key="stream.slug"
-            v-bind="stream"
-          />
+            :href="`/streams/${stream.slug}`"
+            class="group bg-white rounded-xl border border-gray-200/80 overflow-hidden hover:shadow-md hover:border-gray-300/80 transition-all duration-200 no-underline"
+            @click.prevent="$inertia.visit(`/streams/${stream.slug}`)"
+          >
+            <!-- Top accent bar -->
+            <div class="h-1 w-full" :style="{ backgroundColor: stream.color }"></div>
+
+            <div class="p-5">
+              <!-- Header -->
+              <div class="flex items-start gap-3.5 mb-3">
+                <div
+                  class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+                  :style="{ backgroundColor: stream.color + '14' }"
+                >
+                  <component
+                    :is="iconMap[stream.icon] || Settings"
+                    class="w-5 h-5"
+                    :style="{ color: stream.color }"
+                    :stroke-width="1.8"
+                  />
+                </div>
+                <div class="min-w-0">
+                  <h3 class="text-[15px] font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{{ stream.name }}</h3>
+                  <p class="text-xs text-gray-500 mt-0.5">{{ stream.user_stories_count }} user stories</p>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <p class="text-[13px] text-gray-600 leading-relaxed mb-4">{{ stream.description }}</p>
+
+              <!-- Per-stream progress -->
+              <div class="mb-3">
+                <div class="flex items-center justify-between text-[11px] text-gray-500 mb-1.5">
+                  <span>Avancement</span>
+                  <span class="font-semibold text-gray-700">{{ streamProgress(stream) }}%</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-500"
+                    :style="{ width: streamProgress(stream) + '%', backgroundColor: stream.color }"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- Status breakdown mini -->
+              <div class="flex items-center gap-3 text-[11px] text-gray-500">
+                <span class="flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                  {{ stream.stories_todo_count }} à faire
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                  {{ stream.stories_in_progress_count }} en cours
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  {{ stream.stories_done_count }} terminé
+                </span>
+              </div>
+            </div>
+          </a>
         </div>
       </div>
 
       <!-- ═══════════════════════════════════════ -->
-      <!-- ROADMAP + ENGAGEMENTS                    -->
+      <!-- ACTIVITÉ RÉCENTE                         -->
       <!-- ═══════════════════════════════════════ -->
       <div class="grid lg:grid-cols-2 gap-6">
+        <!-- Recent Stories -->
+        <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2">
+              <Clock class="w-4 h-4 text-gray-400" :stroke-width="2" />
+              <h3 class="text-sm font-semibold text-gray-900">Activité récente</h3>
+            </div>
+            <a
+              href="/user-stories"
+              class="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              @click.prevent="$inertia.visit('/user-stories')"
+            >
+              Tout voir →
+            </a>
+          </div>
+
+          <div v-if="recentStories.length" class="space-y-3">
+            <div
+              v-for="story in recentStories"
+              :key="story.id"
+              class="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <!-- Status dot -->
+              <div class="flex-shrink-0 mt-1">
+                <span
+                  :class="[
+                    'block w-2.5 h-2.5 rounded-full',
+                    story.status === 'done' ? 'bg-emerald-500' :
+                    story.status === 'in_progress' ? 'bg-blue-500' : 'bg-gray-300',
+                  ]"
+                ></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-medium text-gray-900 truncate">{{ story.title }}</h4>
+                <div class="flex items-center gap-2 mt-1">
+                  <span
+                    v-if="story.stream"
+                    class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+                    :style="{
+                      backgroundColor: story.stream.color + '14',
+                      color: story.stream.color,
+                    }"
+                  >
+                    {{ story.stream.name }}
+                  </span>
+                  <span
+                    :class="[
+                      'px-1.5 py-0.5 rounded text-[10px] font-medium',
+                      story.priority === 'high' ? 'bg-red-50 text-red-600' :
+                      story.priority === 'medium' ? 'bg-amber-50 text-amber-600' :
+                      'bg-gray-50 text-gray-500',
+                    ]"
+                  >
+                    {{ { high: 'Haute', medium: 'Moyenne', low: 'Basse' }[story.priority] || story.priority }}
+                  </span>
+                  <span v-if="story.assignee" class="text-[10px] text-gray-400">
+                    → {{ story.assignee.name }}
+                  </span>
+                </div>
+              </div>
+              <span class="flex-shrink-0 text-[10px] text-gray-400 mt-0.5">
+                {{ formatDate(story.created_at) }}
+              </span>
+            </div>
+          </div>
+          <div v-else class="text-center py-8">
+            <BookOpen class="w-8 h-8 text-gray-300 mx-auto mb-2" :stroke-width="1.5" />
+            <p class="text-sm text-gray-400">Aucune user story pour le moment</p>
+          </div>
+        </div>
+
         <!-- Roadmap -->
         <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
           <div class="flex items-center gap-2 mb-5">
@@ -170,7 +300,12 @@
           </div>
           <RoadmapTimeline :steps="roadmapSteps" />
         </div>
+      </div>
 
+      <!-- ═══════════════════════════════════════ -->
+      <!-- ENGAGEMENTS + TECH STACK                 -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="grid lg:grid-cols-2 gap-6">
         <!-- Engagements -->
         <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
           <div class="flex items-center gap-2 mb-5">
@@ -193,27 +328,25 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ═══════════════════════════════════════ -->
-      <!-- TECH STACK                               -->
-      <!-- ═══════════════════════════════════════ -->
-      <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
-        <div class="flex items-center gap-2 mb-5">
-          <Server class="w-4 h-4 text-gray-400" :stroke-width="2" />
-          <h3 class="text-sm font-semibold text-gray-900">Stack Technique</h3>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div
-            v-for="(tech, i) in techStack"
-            :key="i"
-            class="text-center p-4 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50/50 transition-all"
-          >
-            <div :class="['w-10 h-10 mx-auto rounded-lg flex items-center justify-center mb-2', tech.bg]">
-              <component :is="tech.icon" :class="['w-5 h-5', tech.color]" :stroke-width="1.8" />
+        <!-- Tech Stack -->
+        <div class="bg-white rounded-xl border border-gray-200/80 p-5 sm:p-6">
+          <div class="flex items-center gap-2 mb-5">
+            <Server class="w-4 h-4 text-gray-400" :stroke-width="2" />
+            <h3 class="text-sm font-semibold text-gray-900">Stack Technique</h3>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div
+              v-for="(tech, i) in techStack"
+              :key="i"
+              class="text-center p-4 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50/50 transition-all"
+            >
+              <div :class="['w-10 h-10 mx-auto rounded-lg flex items-center justify-center mb-2', tech.bg]">
+                <component :is="tech.icon" :class="['w-5 h-5', tech.color]" :stroke-width="1.8" />
+              </div>
+              <h4 class="text-sm font-medium text-gray-900">{{ tech.name }}</h4>
+              <p class="text-[11px] text-gray-500 mt-0.5">{{ tech.role }}</p>
             </div>
-            <h4 class="text-sm font-medium text-gray-900">{{ tech.name }}</h4>
-            <p class="text-[11px] text-gray-500 mt-0.5">{{ tech.role }}</p>
           </div>
         </div>
       </div>
@@ -232,16 +365,28 @@ import {
   Eye, MessageSquare, RefreshCcw, Lock,
   Code, Globe, Database, Bot,
   UserCircle, BookOpen, Rocket, ClipboardCheck,
+  ListChecks, CheckCircle2, BarChart3,
 } from 'lucide-vue-next';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import StreamCard from '@/Components/StreamCard.vue';
 import RoadmapTimeline from '@/Components/RoadmapTimeline.vue';
 
 const props = defineProps({
   streams: Array,
   storyCounts: Object,
+  recentStories: Array,
+  teamCount: Number,
+  personaCount: Number,
 });
+
+/* ── Icon mapping for DB icon strings ── */
+const iconMap = {
+  Settings,
+  Megaphone,
+  GraduationCap,
+};
+
+/* ── Computed ── */
 
 const totalStories = computed(() => {
   const c = props.storyCounts || { todo: 0, in_progress: 0, done: 0 };
@@ -253,60 +398,64 @@ const progressPercent = computed(() => {
   return Math.round(((props.storyCounts?.done || 0) / totalStories.value) * 100);
 });
 
-const kpis = [
-  { value: '-60%', label: 'Temps admin', icon: Clock, bg: 'bg-blue-50', color: 'text-blue-600', trend: 'Objectif', trendUp: true },
-  { value: '+35%', label: 'Taux fidélisation', icon: Target, bg: 'bg-emerald-50', color: 'text-emerald-600', trend: 'Objectif', trendUp: true },
-  { value: '800', label: 'Pages de cours IA', icon: Zap, bg: 'bg-amber-50', color: 'text-amber-600' },
-  { value: '3', label: 'Agents IA dédiés', icon: Users, bg: 'bg-violet-50', color: 'text-violet-600' },
-];
+const kpis = computed(() => [
+  {
+    value: totalStories.value,
+    label: 'User Stories',
+    icon: ListChecks,
+    bg: 'bg-blue-50',
+    color: 'text-blue-600',
+    badge: `${props.streams?.length || 0} axes`,
+    badgeClass: 'text-blue-700 bg-blue-50',
+  },
+  {
+    value: props.storyCounts?.done || 0,
+    label: 'Terminées',
+    icon: CheckCircle2,
+    bg: 'bg-emerald-50',
+    color: 'text-emerald-600',
+    badge: progressPercent.value + '%',
+    badgeClass: 'text-emerald-700 bg-emerald-50',
+  },
+  {
+    value: props.storyCounts?.in_progress || 0,
+    label: 'En cours',
+    icon: Zap,
+    bg: 'bg-amber-50',
+    color: 'text-amber-600',
+  },
+  {
+    value: props.teamCount || 0,
+    label: 'Membres équipe',
+    icon: Users,
+    bg: 'bg-violet-50',
+    color: 'text-violet-600',
+    badge: `${props.personaCount || 0} personas`,
+    badgeClass: 'text-violet-700 bg-violet-50',
+  },
+]);
 
-const streamCards = [
-  {
-    slug: 'operationnel',
-    title: 'Opérationnel',
-    subtitle: 'Agent Secrétariat IA',
-    description: 'Automatisation des tâches quotidiennes pour libérer du temps au personnel soignant.',
-    features: [
-      'Secrétariat intelligent (rappels, confirmations)',
-      'Gestion logistique & planning optimisé',
-      'Suivi des stocks et commandes auto',
-      'Tri et priorisation des urgences',
-    ],
-    status: 'Sprint 1 — Actif',
-    icon: Settings,
-    accentColor: '#10b981',
-  },
-  {
-    slug: 'marketing',
-    title: 'Marketing',
-    subtitle: 'Agent Croissance IA',
-    description: 'Stratégie de fidélisation et acquisition pour développer le portefeuille patients.',
-    features: [
-      'Fidélisation : anniversaires, relances',
-      'Campagnes réseaux sociaux auto',
-      'Développement réseau praticiens',
-      'Analyse performance des canaux',
-    ],
-    status: 'Sprint 2 — Planifié',
-    icon: Megaphone,
-    accentColor: '#8b5cf6',
-  },
-  {
-    slug: 'expertise-dr-z',
-    title: 'Expertise — Dr Z',
-    subtitle: 'Agent Expert Orthodontie',
-    description: 'Capitalisation sur 800 pages de cours pour un assistant IA d\'aide au diagnostic.',
-    features: [
-      'Base de connaissances IA',
-      'Aide au plan de traitement',
-      'Consultation littérature en langage naturel',
-      'Apprentissage par cas cliniques',
-    ],
-    status: 'Sprint 3 — Innovation',
-    icon: GraduationCap,
-    accentColor: '#3b82f6',
-  },
-];
+function streamProgress(stream) {
+  const total = stream.user_stories_count || 0;
+  if (!total) return 0;
+  return Math.round(((stream.stories_done_count || 0) / total) * 100);
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - d;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 60) return `il y a ${diffMin}min`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `il y a ${diffH}h`;
+  const diffD = Math.floor(diffH / 24);
+  if (diffD < 7) return `il y a ${diffD}j`;
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+}
+
+/* ── Static data (Roadmap, Engagements, Tech) ── */
 
 const roadmapSteps = [
   { title: 'Définition des Personas', description: 'Identifier les utilisateurs clés et comprendre leurs besoins.', icon: UserCircle, tag: 'Découverte', active: true },
@@ -325,7 +474,7 @@ const engagements = [
 const techStack = [
   { name: 'Laravel 12', role: 'Backend & API', icon: Code, bg: 'bg-red-50', color: 'text-red-600' },
   { name: 'Vue.js 3', role: 'Interface SPA', icon: Globe, bg: 'bg-emerald-50', color: 'text-emerald-600' },
-  { name: 'SQLite / PgSQL', role: 'Base de données', icon: Database, bg: 'bg-blue-50', color: 'text-blue-600' },
+  { name: 'SQLite', role: 'Base de données', icon: Database, bg: 'bg-blue-50', color: 'text-blue-600' },
   { name: 'Agents IA', role: 'Claude / OpenAI', icon: Bot, bg: 'bg-violet-50', color: 'text-violet-600' },
 ];
 </script>

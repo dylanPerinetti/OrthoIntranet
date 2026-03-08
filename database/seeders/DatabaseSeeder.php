@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             StreamSeeder::class,
             UserStorySeeder::class,
+            PersonaSeeder::class,
         ]);
     }
 }

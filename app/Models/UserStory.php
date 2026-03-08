@@ -12,7 +12,7 @@ class UserStory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'stream_id', 'sprint_id', 'assigned_to', 'created_by',
+        'stream_id', 'sprint_id', 'persona_id', 'assigned_to', 'created_by',
         'title', 'description', 'acceptance_criteria',
         'status', 'priority', 'story_points', 'sort_order',
     ];
@@ -36,6 +36,11 @@ class UserStory extends Model
     public function stream(): BelongsTo
     {
         return $this->belongsTo(Stream::class);
+    }
+
+    public function persona(): BelongsTo
+    {
+        return $this->belongsTo(Persona::class);
     }
 
     public function sprint(): BelongsTo

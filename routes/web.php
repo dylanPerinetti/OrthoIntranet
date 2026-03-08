@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\StreamController;
 use App\Http\Controllers\UserStoryController;
+use App\Http\Controllers\UserStoryListController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,8 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
-    Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store']);
 });
 
 /*
@@ -40,6 +39,15 @@ Route::middleware('auth')->group(function () {
 
     // Streams detail
     Route::get('/streams/{stream:slug}', [StreamController::class, 'show'])->name('streams.show');
+
+    // Personas
+    Route::get('/personas', [PersonaController::class, 'index'])->name('personas.index');
+    Route::post('/personas', [PersonaController::class, 'store'])->name('personas.store');
+    Route::put('/personas/{persona}', [PersonaController::class, 'update'])->name('personas.update');
+    Route::delete('/personas/{persona}', [PersonaController::class, 'destroy'])->name('personas.destroy');
+
+    // User Stories (vue liste)
+    Route::get('/user-stories', [UserStoryListController::class, 'index'])->name('user-stories.index');
 
     /*
     |----------------------------------------------------------------------

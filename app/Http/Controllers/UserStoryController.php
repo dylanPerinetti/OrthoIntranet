@@ -12,7 +12,7 @@ class UserStoryController extends Controller
 {
     public function index(Request $request)
     {
-        $stories = UserStory::with(['stream:id,name,color', 'assignee:id,name', 'creator:id,name'])
+        $stories = UserStory::with(['stream:id,name,color', 'persona:id,name,role,avatar_color', 'assignee:id,name', 'creator:id,name'])
             ->orderBy('sort_order')
             ->orderByDesc('created_at')
             ->get()
@@ -54,6 +54,7 @@ class UserStoryController extends Controller
             'description'         => 'nullable|string',
             'acceptance_criteria' => 'nullable|string',
             'stream_id'           => 'required|exists:streams,id',
+            'persona_id'          => 'nullable|exists:personas,id',
             'sprint_id'           => 'nullable|exists:sprints,id',
             'assigned_to'         => 'nullable|exists:users,id',
             'status'              => 'required|in:todo,in_progress,done',
@@ -76,6 +77,7 @@ class UserStoryController extends Controller
             'description'         => 'nullable|string',
             'acceptance_criteria' => 'nullable|string',
             'stream_id'           => 'sometimes|required|exists:streams,id',
+            'persona_id'          => 'nullable|exists:personas,id',
             'sprint_id'           => 'nullable|exists:sprints,id',
             'assigned_to'         => 'nullable|exists:users,id',
             'status'              => 'sometimes|required|in:todo,in_progress,done',
