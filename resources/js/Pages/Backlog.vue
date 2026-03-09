@@ -150,153 +150,314 @@
     <!-- MODAL CREATE / EDIT                     -->
     <!-- ═══════════════════════════════════════ -->
     <Teleport to="body">
-      <div v-if="showModal" class="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 pt-16 sm:pt-4">
-        <div class="absolute inset-0 bg-black/40" @click="closeModal"></div>
-        <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+      <div v-if="showModal" class="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 pt-12 sm:pt-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="closeModal"></div>
+
+        <Transition
+          enter-active-class="transition duration-200 ease-out"
+          enter-from-class="opacity-0 scale-95 translate-y-4"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          leave-active-class="transition duration-150 ease-in"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
+          appear
+        >
+        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <!-- Header -->
-          <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-5 py-4 flex items-center justify-between rounded-t-xl z-10">
-            <h3 class="text-base font-bold text-gray-900 dark:text-white">
-              {{ editingStory ? 'Modifier la User Story' : 'Nouvelle User Story' }}
-            </h3>
-            <button @click="closeModal" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
+          <div class="border-b border-gray-100 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div :class="[
+                'w-9 h-9 rounded-xl flex items-center justify-center',
+                editingStory ? 'bg-blue-50 dark:bg-blue-900/30' : 'bg-emerald-50 dark:bg-emerald-900/30',
+              ]">
+                <Pencil v-if="editingStory" class="w-4 h-4 text-blue-600 dark:text-blue-400" :stroke-width="2" />
+                <Sparkles v-else class="w-4 h-4 text-emerald-600 dark:text-emerald-400" :stroke-width="2" />
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white">
+                  {{ editingStory ? 'Modifier la User Story' : 'Nouvelle User Story' }}
+                </h3>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Remplissez les champs ci-dessous</p>
+              </div>
+            </div>
+            <button @click="closeModal" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 transition-colors">
               <X class="w-5 h-5" :stroke-width="2" />
             </button>
           </div>
 
-          <form @submit.prevent="submitForm" class="p-5 space-y-4">
-            <!-- Titre -->
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Titre *</label>
-              <input
-                v-model="storyForm.title"
-                type="text"
-                required
-                class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                placeholder="En tant que [persona], je veux [action]…"
-              />
-              <p v-if="storyForm.errors.title" class="mt-1 text-xs text-red-600">{{ storyForm.errors.title }}</p>
+          <!-- Body (scrollable) -->
+          <form @submit.prevent="submitForm" class="flex-1 overflow-y-auto">
+            <div class="px-6 py-5 space-y-6">
+
+              <!-- ── Section 1 : Identité ── -->
+              <div class="space-y-4">
+                <div class="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <FileText class="w-3.5 h-3.5" :stroke-width="2" />
+                  Identité
+                </div>
+
+                <!-- Titre -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Titre <span class="text-red-500">*</span></label>
+                  <input
+                    ref="titleInput"
+                    v-model="storyForm.title"
+                    type="text"
+                    required
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-all"
+                    placeholder="En tant que [persona], je veux [action]…"
+                  />
+                  <p v-if="storyForm.errors.title" class="mt-1 text-xs text-red-500">{{ storyForm.errors.title }}</p>
+                </div>
+
+                <!-- Description -->
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Description</label>
+                    <span class="text-[10px] tabular-nums" :class="storyForm.description.length > 500 ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'">{{ storyForm.description.length }}/500</span>
+                  </div>
+                  <textarea
+                    v-model="storyForm.description"
+                    rows="3"
+                    maxlength="500"
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-all resize-none"
+                    placeholder="Décrivez le besoin en détail…"
+                  ></textarea>
+                </div>
+
+                <!-- Critères d'acceptation -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Critères d'acceptation</label>
+                  <textarea
+                    v-model="storyForm.acceptance_criteria"
+                    rows="2"
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-all resize-none font-mono text-xs"
+                    placeholder="- [ ] Critère 1&#10;- [ ] Critère 2"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- ── Section 2 : Classification ── -->
+              <div class="space-y-4">
+                <div class="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <Tag class="w-3.5 h-3.5" :stroke-width="2" />
+                  Classification
+                </div>
+
+                <!-- Stream — pills visuels -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Stream <span class="text-red-500">*</span></label>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      v-for="s in streams"
+                      :key="s.id"
+                      type="button"
+                      @click="storyForm.stream_id = s.id"
+                      :class="[
+                        'inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all',
+                        storyForm.stream_id === s.id
+                          ? 'border-current shadow-sm'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700/30',
+                      ]"
+                      :style="storyForm.stream_id === s.id ? { borderColor: s.color, backgroundColor: s.color + '10', color: s.color } : {}"
+                    >
+                      <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ backgroundColor: s.color }"></span>
+                      {{ s.name }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Priorité — pills colorés -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Priorité <span class="text-red-500">*</span></label>
+                  <div class="flex gap-2">
+                    <button
+                      v-for="p in priorityOptions"
+                      :key="p.value"
+                      type="button"
+                      @click="storyForm.priority = p.value"
+                      :class="[
+                        'flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border-2 transition-all',
+                        storyForm.priority === p.value
+                          ? p.activeClass
+                          : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700/30',
+                      ]"
+                    >
+                      <component :is="p.icon" class="w-3.5 h-3.5" :stroke-width="2" />
+                      {{ p.label }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Story Points — badges Fibonacci -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Story Points</label>
+                  <div class="flex flex-wrap gap-1.5">
+                    <button
+                      v-for="sp in fibonacciPoints"
+                      :key="sp"
+                      type="button"
+                      @click="storyForm.story_points = storyForm.story_points === sp ? null : sp"
+                      :class="[
+                        'w-9 h-9 rounded-lg text-xs font-bold border-2 transition-all',
+                        storyForm.story_points === sp
+                          ? 'border-blue-500 bg-blue-500 text-white shadow-sm shadow-blue-500/30'
+                          : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700/30 hover:border-gray-300 dark:hover:border-gray-500',
+                      ]"
+                    >
+                      {{ sp }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Statut -->
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Statut <span class="text-red-500">*</span></label>
+                  <div class="flex gap-2">
+                    <button
+                      v-for="st in statusOptions"
+                      :key="st.value"
+                      type="button"
+                      @click="storyForm.status = st.value"
+                      :class="[
+                        'flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border-2 transition-all',
+                        storyForm.status === st.value
+                          ? st.activeClass
+                          : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700/30',
+                      ]"
+                    >
+                      <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: st.color }"></span>
+                      {{ st.label }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── Section 3 : Affectation ── -->
+              <div class="space-y-4">
+                <div class="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <Users class="w-3.5 h-3.5" :stroke-width="2" />
+                  Affectation
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <!-- Assigné à -->
+                  <div>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Assigné à</label>
+                    <select
+                      v-model="storyForm.assigned_to"
+                      class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-all appearance-none"
+                    >
+                      <option :value="null">Non assigné</option>
+                      <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }}</option>
+                    </select>
+                  </div>
+
+                  <!-- Persona -->
+                  <div>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Persona</label>
+                    <select
+                      v-model="storyForm.persona_id"
+                      class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-all appearance-none"
+                    >
+                      <option :value="null">Aucun persona</option>
+                      <option v-for="p in personas" :key="p.id" :value="p.id">{{ p.name }} — {{ p.role }}</option>
+                    </select>
+                  </div>
+
+                  <!-- Sprint -->
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Sprint</label>
+                    <select
+                      v-model="storyForm.sprint_id"
+                      class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-all appearance-none"
+                    >
+                      <option :value="null">Non planifié</option>
+                      <option v-for="sp in sprints" :key="sp.id" :value="sp.id">
+                        S{{ sp.number }} — {{ sp.name }}
+                        <template v-if="sp.status === 'active'"> (actif)</template>
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- Description -->
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Description</label>
-              <textarea
-                v-model="storyForm.description"
-                rows="3"
-                class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
-                placeholder="Décrivez le besoin en détail…"
-              ></textarea>
-            </div>
-
-            <!-- Critères -->
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Critères d'acceptation</label>
-              <textarea
-                v-model="storyForm.acceptance_criteria"
-                rows="2"
-                class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
-                placeholder="- [ ] Critère 1&#10;- [ ] Critère 2"
-              ></textarea>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Stream *</label>
-                <select
-                  v-model="storyForm.stream_id"
-                  required
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-white"
+            <!-- Footer fixe -->
+            <div class="sticky bottom-0 bg-gray-50 dark:bg-gray-800/80 border-t border-gray-100 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+              <p class="text-[11px] text-gray-400 dark:text-gray-500">
+                <span class="text-red-500">*</span> Champs obligatoires
+              </p>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  @click="closeModal"
+                  class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
-                  <option value="" disabled>Choisir…</option>
-                  <option v-for="s in streams" :key="s.id" :value="s.id">{{ s.name }}</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Statut *</label>
-                <select
-                  v-model="storyForm.status"
-                  required
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-white"
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  :disabled="storyForm.processing"
+                  class="inline-flex items-center gap-2 px-5 py-2 bg-[#1a1f36] dark:bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-[#252b45] dark:hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-sm"
                 >
-                  <option value="todo">À faire</option>
-                  <option value="in_progress">En cours</option>
-                  <option value="done">Terminé</option>
-                </select>
+                  <Loader2 v-if="storyForm.processing" class="w-4 h-4 animate-spin" :stroke-width="2" />
+                  <CheckCircle2 v-else class="w-4 h-4" :stroke-width="2" />
+                  {{ editingStory ? 'Enregistrer' : 'Créer la story' }}
+                </button>
               </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Priorité *</label>
-                <select
-                  v-model="storyForm.priority"
-                  required
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-white"
-                >
-                  <option value="low">Basse</option>
-                  <option value="medium">Moyenne</option>
-                  <option value="high">Haute</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Story Points</label>
-                <input
-                  v-model.number="storyForm.story_points"
-                  type="number"
-                  min="1"
-                  max="21"
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
-                  placeholder="1-21"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Assigné à</label>
-              <select
-                v-model="storyForm.assigned_to"
-                class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-white"
-              >
-                <option :value="null">Non assigné</option>
-                <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }}</option>
-              </select>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
-              <button
-                type="button"
-                @click="closeModal"
-                class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                :disabled="storyForm.processing"
-                class="px-5 py-2 bg-[#1a1f36] text-white text-sm font-medium rounded-lg hover:bg-[#252b45] transition-colors disabled:opacity-50"
-              >
-                {{ editingStory ? 'Enregistrer' : 'Créer' }}
-              </button>
             </div>
           </form>
         </div>
+        </Transition>
       </div>
+      </Transition>
     </Teleport>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Plus, Pencil, Trash2, Inbox, X, Filter } from 'lucide-vue-next';
+import {
+  Plus, Pencil, Trash2, Inbox, X, Filter,
+  FileText, Tag, Users, Sparkles, Loader2, CheckCircle2,
+  ArrowUp, Minus, ArrowDown,
+} from 'lucide-vue-next';
 
 const props = defineProps({
   columns: Array,
   streams: Array,
   users: Array,
+  personas: Array,
+  sprints: Array,
 });
+
+/* ── Options visuelles ── */
+const fibonacciPoints = [1, 2, 3, 5, 8, 13, 21];
+
+const priorityOptions = [
+  { value: 'high',   label: 'Haute',   icon: ArrowUp,  activeClass: 'border-red-500 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400' },
+  { value: 'medium', label: 'Moyenne', icon: Minus,     activeClass: 'border-amber-500 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' },
+  { value: 'low',    label: 'Basse',   icon: ArrowDown, activeClass: 'border-gray-400 bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300' },
+];
+
+const statusOptions = [
+  { value: 'todo',        label: 'À faire',  color: '#94a3b8', activeClass: 'border-slate-400 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300' },
+  { value: 'in_progress', label: 'En cours', color: '#3b82f6', activeClass: 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' },
+  { value: 'done',        label: 'Terminé',  color: '#22c55e', activeClass: 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
+];
+
+const titleInput = ref(null);
 
 /* ── Filter ── */
 const activeStreamFilter = ref(null);
@@ -326,6 +487,8 @@ const storyForm = useForm({
   priority: 'medium',
   story_points: null,
   assigned_to: null,
+  persona_id: null,
+  sprint_id: null,
 });
 
 function openCreateModal() {
@@ -334,6 +497,7 @@ function openCreateModal() {
   storyForm.clearErrors();
   if (props.streams.length) storyForm.stream_id = props.streams[0].id;
   showModal.value = true;
+  nextTick(() => titleInput.value?.focus());
 }
 
 function openEditModal(story) {
@@ -346,8 +510,11 @@ function openEditModal(story) {
   storyForm.priority = story.priority;
   storyForm.story_points = story.story_points;
   storyForm.assigned_to = story.assigned_to;
+  storyForm.persona_id = story.persona_id || null;
+  storyForm.sprint_id = story.sprint_id || null;
   storyForm.clearErrors();
   showModal.value = true;
+  nextTick(() => titleInput.value?.focus());
 }
 
 function closeModal() {

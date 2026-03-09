@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Persona;
+use App\Models\Sprint;
 use App\Models\Stream;
 use App\Models\UserStory;
 use App\Models\User;
@@ -21,8 +23,10 @@ class UserStoryController extends Controller
             ->get()
             ->groupBy('status');
 
-        $streams = Stream::orderBy('sort_order')->get(['id', 'name', 'color']);
-        $users   = User::orderBy('name')->get(['id', 'name', 'role']);
+        $streams  = Stream::orderBy('sort_order')->get(['id', 'name', 'color']);
+        $users    = User::orderBy('name')->get(['id', 'name', 'role']);
+        $personas = Persona::orderBy('sort_order')->get(['id', 'name', 'role', 'avatar_color']);
+        $sprints  = Sprint::where('status', '!=', 'completed')->orderBy('number')->get(['id', 'name', 'number', 'status']);
 
         return Inertia::render('Backlog', [
             'columns' => [
@@ -45,8 +49,10 @@ class UserStoryController extends Controller
                     'items' => $stories->get('done', collect())->values(),
                 ],
             ],
-            'streams' => $streams,
-            'users'   => $users,
+            'streams'  => $streams,
+            'users'    => $users,
+            'personas' => $personas,
+            'sprints'  => $sprints,
         ]);
     }
 
