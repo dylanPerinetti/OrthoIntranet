@@ -1,94 +1,137 @@
 <template>
   <AuthenticatedLayout>
-    <div class="space-y-6">
-      <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Backlog</h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Gérez les User Stories du projet</p>
+    <div class="space-y-5">
+
+      <!-- ═══════ HERO HEADER ═══════ -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1f36] to-[#2d3561] dark:from-gray-800 dark:to-gray-900 px-6 py-6 sm:px-8 sm:py-7">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl"></div>
+        <div class="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/10 rounded-full translate-y-1/2 -translate-x-1/4 blur-xl"></div>
+
+        <div class="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
+          <div>
+            <div class="flex items-center gap-2.5 mb-1">
+              <div class="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <LayoutGrid class="w-4 h-4 text-white/80" :stroke-width="2" />
+              </div>
+              <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Backlog</h1>
+            </div>
+            <p class="text-sm text-white/50 ml-[42px]">
+              {{ totalStories }} stories · {{ totalPoints }} points · {{ completionPercent }}% complétées
+            </p>
+          </div>
+          <button
+            @click="openCreateModal()"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-[#1a1f36] text-sm font-semibold rounded-xl hover:bg-white/90 transition-all shadow-lg shadow-black/10 active:scale-[0.97]"
+          >
+            <Plus class="w-4 h-4" :stroke-width="2.5" />
+            Nouvelle Story
+          </button>
         </div>
-        <button
-          @click="openCreateModal()"
-          class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#1a1f36] text-white text-sm font-medium rounded-lg hover:bg-[#252b45] transition-colors shadow-sm"
-        >
-          <Plus class="w-4 h-4" :stroke-width="2" />
-          Nouvelle User Story
-        </button>
+
+        <!-- Mini‑stats -->
+        <div class="relative mt-5 grid grid-cols-3 gap-3">
+          <div v-for="col in filteredColumns" :key="col.key" class="bg-white/[0.07] backdrop-blur-sm rounded-xl px-4 py-3 border border-white/[0.06]">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: col.color }"></span>
+              <span class="text-[11px] font-medium text-white/50 uppercase tracking-wider">{{ col.label }}</span>
+            </div>
+            <span class="text-lg font-bold text-white tabular-nums">{{ col.items.length }}</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Filter bar -->
-      <div class="flex items-center gap-3 flex-wrap">
-        <div class="flex items-center gap-1.5 text-xs text-gray-500">
-          <Filter class="w-3.5 h-3.5" :stroke-width="2" />
-          <span>Filtres :</span>
+      <!-- ═══════ TOOLBAR ═══════ -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="flex items-center gap-1.5 mr-1">
+          <Filter class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" :stroke-width="2" />
         </div>
         <button
           v-for="stream in streams"
           :key="stream.id"
           @click="toggleStreamFilter(stream.id)"
           :class="[
-            'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors',
+            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all',
             activeStreamFilter === stream.id
-              ? 'border-gray-900 bg-gray-900 text-white'
-              : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300',
+              ? 'border-transparent shadow-sm'
+              : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600',
           ]"
+          :style="activeStreamFilter === stream.id ? { backgroundColor: stream.color + '18', color: stream.color, borderColor: stream.color + '40' } : {}"
         >
-          <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: stream.color }"></span>
+          <span class="w-2 h-2 rounded-full flex-shrink-0" :style="{ backgroundColor: stream.color }"></span>
           {{ stream.name }}
         </button>
         <button
           v-if="activeStreamFilter"
           @click="activeStreamFilter = null"
-          class="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          class="ml-1 inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all"
         >
+          <X class="w-3 h-3" :stroke-width="2" />
           Effacer
         </button>
       </div>
 
-      <!-- Kanban Board -->
+      <!-- ═══════ KANBAN BOARD ═══════ -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5">
         <div
           v-for="column in filteredColumns"
           :key="column.key"
-          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/80 flex flex-col min-h-[450px]"
+          class="group/col rounded-2xl flex flex-col min-h-[480px] transition-all"
+          :class="[
+            dragOverColumn === column.key
+              ? 'bg-blue-50/60 dark:bg-blue-900/10 ring-2 ring-blue-400/40 ring-offset-2 ring-offset-[#f8f9fb] dark:ring-offset-gray-900'
+              : 'bg-gray-50/80 dark:bg-gray-800/40',
+          ]"
           @dragover.prevent="onDragOver($event, column.key)"
           @dragleave="onDragLeave($event)"
           @drop="onDrop($event, column.key)"
         >
           <!-- Column header -->
-          <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between px-4 py-3.5">
             <div class="flex items-center gap-2.5">
-              <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: column.color }"></span>
-              <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ column.label }}</h3>
+              <span class="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-gray-800" :style="{ backgroundColor: column.color }"></span>
+              <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ column.label }}</h3>
             </div>
-            <span class="text-[11px] text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-md font-medium tabular-nums">
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md tabular-nums"
+              :class="column.items.length > 0
+                ? 'text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 shadow-sm'
+                : 'text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700/60'"
+            >
               {{ column.items.length }}
             </span>
           </div>
 
           <!-- Cards container -->
-          <div class="flex-1 p-3 space-y-2.5 overflow-y-auto">
+          <div class="flex-1 px-2.5 pb-3 space-y-2 overflow-y-auto">
             <div
               v-for="story in column.items"
               :key="story.id"
               draggable="true"
               @dragstart="onDragStart($event, story)"
               @dragend="onDragEnd"
-              class="bg-white dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm hover:shadow transition-all cursor-grab active:cursor-grabbing p-3.5 group"
+              class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200/80 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200 cursor-grab active:cursor-grabbing active:shadow-lg active:scale-[1.02] active:rotate-[0.5deg] p-3.5 group relative"
             >
-              <!-- Top row: priority + stream -->
-              <div class="flex items-center justify-between mb-2">
+              <!-- Top badges -->
+              <div class="flex items-center gap-1.5 flex-wrap mb-2.5">
                 <span
-                  :class="['inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide', priorityClass(story.priority)]"
+                  :class="['inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide', priorityClass(story.priority)]"
                 >
+                  <component :is="priorityIcon(story.priority)" class="w-2.5 h-2.5" :stroke-width="2.5" />
                   {{ priorityLabel(story.priority) }}
                 </span>
                 <span
                   v-if="story.stream"
-                  class="text-[10px] px-1.5 py-0.5 rounded font-medium"
-                  :style="{ backgroundColor: story.stream.color + '12', color: story.stream.color }"
+                  class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-medium"
+                  :style="{ backgroundColor: story.stream.color + '14', color: story.stream.color }"
                 >
+                  <span class="w-1.5 h-1.5 rounded-full" :style="{ backgroundColor: story.stream.color }"></span>
                   {{ story.stream.name }}
+                </span>
+                <span
+                  v-if="story.sprint"
+                  class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-medium bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400"
+                >
+                  <Zap class="w-2.5 h-2.5" :stroke-width="2" />
+                  S{{ story.sprint.number }}
                 </span>
               </div>
 
@@ -96,50 +139,78 @@
               <h4 class="text-[13px] font-semibold text-gray-900 dark:text-white leading-snug mb-1">{{ story.title }}</h4>
 
               <!-- Description -->
-              <p v-if="story.description" class="text-[11px] text-gray-500 leading-relaxed line-clamp-2 mb-2.5">
+              <p v-if="story.description" class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 mb-2">
                 {{ story.description }}
               </p>
 
-              <!-- Footer -->
-              <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+              <!-- Criteria progress (mini) -->
+              <div v-if="getCriteriaProgress(story).total > 0" class="mb-2.5">
                 <div class="flex items-center gap-2">
-                  <div
-                    v-if="story.assignee"
-                    class="w-5 h-5 rounded-md bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-[10px] font-bold"
-                    :title="story.assignee.name"
-                  >
-                    {{ story.assignee.name.charAt(0) }}
+                  <div class="flex-1 h-1 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                    <div class="h-full rounded-full bg-emerald-500 transition-all duration-300"
+                      :style="{ width: getCriteriaProgress(story).percent + '%' }"
+                    ></div>
                   </div>
-                  <span v-if="story.story_points" class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded font-medium tabular-nums">
-                    {{ story.story_points }}pt
+                  <span class="text-[9px] tabular-nums font-medium"
+                    :class="getCriteriaProgress(story).percent === 100 ? 'text-emerald-500' : 'text-gray-400 dark:text-gray-500'"
+                  >
+                    {{ getCriteriaProgress(story).done }}/{{ getCriteriaProgress(story).total }}
                   </span>
                 </div>
-                <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              </div>
+
+              <!-- Footer -->
+              <div class="flex items-center justify-between pt-2.5 border-t border-gray-100 dark:border-gray-700/60">
+                <div class="flex items-center gap-2">
+                  <!-- Assignee avatar -->
+                  <div
+                    v-if="story.assignee"
+                    class="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm"
+                    :title="story.assignee.name"
+                  >
+                    {{ story.assignee.name.charAt(0).toUpperCase() }}
+                  </div>
+                  <!-- Persona chip -->
+                  <span
+                    v-if="story.persona"
+                    class="inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-900/15 text-amber-600 dark:text-amber-400"
+                    :title="story.persona.name"
+                  >
+                    <UserCircle class="w-2.5 h-2.5" :stroke-width="2" />
+                    {{ story.persona.name }}
+                  </span>
+                  <!-- Story points badge -->
+                  <span v-if="story.story_points" class="inline-flex items-center justify-center w-6 h-6 text-[10px] font-bold tabular-nums rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                    {{ story.story_points }}
+                  </span>
+                </div>
+                <!-- Actions -->
+                <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                   <button
                     @click.stop="openEditModal(story)"
-                    class="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-colors"
+                    class="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     title="Modifier"
                   >
-                    <Pencil class="w-3 h-3" :stroke-width="2" />
+                    <Pencil class="w-3.5 h-3.5" :stroke-width="2" />
                   </button>
                   <button
                     @click.stop="deleteStory(story)"
-                    class="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
+                    class="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                     title="Supprimer"
                   >
-                    <Trash2 class="w-3 h-3" :stroke-width="2" />
+                    <Trash2 class="w-3.5 h-3.5" :stroke-width="2" />
                   </button>
                 </div>
               </div>
             </div>
 
             <!-- Empty state -->
-            <div v-if="column.items.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
-              <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mb-2">
-                <Inbox class="w-5 h-5 text-gray-400" :stroke-width="1.5" />
+            <div v-if="column.items.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
+              <div class="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-gray-700/50 flex items-center justify-center mb-3 ring-4 ring-gray-50 dark:ring-gray-800/50">
+                <Inbox class="w-5 h-5 text-gray-300 dark:text-gray-500" :stroke-width="1.5" />
               </div>
-              <p class="text-xs text-gray-400">Aucune story</p>
-              <p class="text-[11px] text-gray-300 mt-0.5">Glissez-déposez ou créez-en une</p>
+              <p class="text-xs font-medium text-gray-400 dark:text-gray-500">Aucune story</p>
+              <p class="text-[11px] text-gray-300 dark:text-gray-600 mt-0.5">Glissez-déposez ou créez-en une</p>
             </div>
           </div>
         </div>
@@ -493,7 +564,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {
   Plus, Pencil, Trash2, Inbox, X, Filter,
   FileText, Tag, Users, Sparkles, Loader2, CheckCircle2,
-  ArrowUp, Minus, ArrowDown, ListChecks,
+  ArrowUp, Minus, ArrowDown, ListChecks, LayoutGrid, Zap, UserCircle,
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -520,6 +591,22 @@ const statusOptions = [
 ];
 
 const titleInput = ref(null);
+
+/* ── Computed stats ── */
+const totalStories = computed(() => props.columns.reduce((sum, c) => sum + c.items.length, 0));
+const totalPoints = computed(() => props.columns.reduce((sum, c) => sum + c.items.reduce((s, i) => s + (i.story_points || 0), 0), 0));
+const completionPercent = computed(() => {
+  if (!totalStories.value) return 0;
+  const done = props.columns.find(c => c.key === 'done')?.items.length || 0;
+  return Math.round((done / totalStories.value) * 100);
+});
+
+function getCriteriaProgress(story) {
+  if (!story.acceptance_criteria) return { total: 0, done: 0, percent: 0 };
+  const lines = story.acceptance_criteria.split('\n').filter(l => /^\s*-\s*\[/.test(l));
+  const done = lines.filter(l => /^\s*-\s*\[x\]/i.test(l)).length;
+  return { total: lines.length, done, percent: lines.length ? Math.round((done / lines.length) * 100) : 0 };
+}
 
 /* ── Critères d'acceptation (checklist) ── */
 const criteriaItems = ref([]);
@@ -639,6 +726,7 @@ function deleteStory(story) {
 
 /* ── Drag & Drop ── */
 let draggedStory = null;
+const dragOverColumn = ref(null);
 
 function onDragStart(event, story) {
   draggedStory = story;
@@ -649,19 +737,23 @@ function onDragStart(event, story) {
 
 function onDragEnd(event) {
   event.target.classList.remove('dragging');
+  dragOverColumn.value = null;
 }
 
 function onDragOver(event, columnKey) {
-  event.currentTarget.classList.add('drag-over');
+  dragOverColumn.value = columnKey;
 }
 
 function onDragLeave(event) {
-  event.currentTarget.classList.remove('drag-over');
+  // Only clear if actually leaving the column (not entering a child)
+  if (!event.currentTarget.contains(event.relatedTarget)) {
+    dragOverColumn.value = null;
+  }
 }
 
 function onDrop(event, newStatus) {
   event.preventDefault();
-  event.currentTarget.classList.remove('drag-over');
+  dragOverColumn.value = null;
   if (!draggedStory || draggedStory.status === newStatus) { draggedStory = null; return; }
   router.patch(`/user-stories/${draggedStory.id}/move`, { status: newStatus, sort_order: 0 }, { preserveScroll: true });
   draggedStory = null;
@@ -669,9 +761,16 @@ function onDrop(event, newStatus) {
 
 /* ── Helpers ── */
 function priorityClass(p) {
-  return { high: 'bg-red-50 text-red-700 border border-red-200/60', medium: 'bg-amber-50 text-amber-700 border border-amber-200/60', low: 'bg-gray-50 text-gray-600 border border-gray-200/60' }[p] || '';
+  return {
+    high: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+    medium: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+    low: 'bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400',
+  }[p] || '';
 }
 function priorityLabel(p) {
   return { high: 'Haute', medium: 'Moy', low: 'Basse' }[p] || p;
+}
+function priorityIcon(p) {
+  return { high: ArrowUp, medium: Minus, low: ArrowDown }[p] || Minus;
 }
 </script>

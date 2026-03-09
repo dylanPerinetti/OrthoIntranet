@@ -17,7 +17,7 @@ class UserStoryController extends Controller
     {
         $this->authorize('viewAny', UserStory::class);
 
-        $stories = UserStory::with(['stream:id,name,color', 'persona:id,name,role,avatar_color', 'assignee:id,name', 'creator:id,name'])
+        $stories = UserStory::with(['stream:id,name,color', 'persona:id,name,role,avatar_color', 'sprint:id,name,number,status', 'assignee:id,name', 'creator:id,name'])
             ->orderBy('sort_order')
             ->orderByDesc('created_at')
             ->get()
