@@ -38,11 +38,20 @@
           </button>
 
           <!-- Breadcrumb -->
-          <div class="flex-1 flex items-center gap-2 text-sm">
+          <div class="flex-1 flex items-center gap-2 text-sm min-w-0">
             <span class="hidden sm:inline text-gray-400 dark:text-gray-500">OrthoIntranet</span>
             <ChevronRight class="hidden sm:block w-3.5 h-3.5 text-gray-300 dark:text-gray-600" :stroke-width="2" />
             <span class="font-medium text-gray-700 dark:text-gray-200">{{ currentPageTitle }}</span>
           </div>
+
+          <form @submit.prevent="submitSearch" class="hidden md:block w-72">
+            <input
+              v-model="searchQuery"
+              type="search"
+              placeholder="Rechercher users, stories, personas, streams..."
+              class="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            />
+          </form>
 
           <!-- Top-right actions -->
           <div class="flex items-center gap-3">
@@ -146,6 +155,7 @@ const navLinks = computed(() => {
   ];
   if (auth.value?.user?.role === 'admin') {
     links.push({ href: '/admin/users', label: 'Utilisateurs', icon: 'ShieldCheck' });
+    links.push({ href: '/admin/audit-logs', label: 'Audit Logs', icon: 'ShieldCheck' });
   }
   return links;
 });
@@ -161,9 +171,12 @@ const currentPageTitle = computed(() => {
   if (page.url.startsWith('/personas')) return 'Persona Types';
   if (page.url.startsWith('/user-stories')) return 'User Stories';
   if (page.url.startsWith('/sprints')) return 'Roadmap Agile';
+  if (page.url.startsWith('/search')) return 'Recherche globale';
   if (page.url.startsWith('/settings')) return 'Réglages';
   return 'Page';
 });
+
+const searchQuery = ref('');
 
 function isActive(href) {
   return page.url === href || (href !== '/' && page.url.startsWith(href));
@@ -176,6 +189,10 @@ function navigate(href) {
 
 function logout() {
   router.post('/logout');
+}
+
+function submitSearch() {
+  router.get('/search', { q: searchQuery.value }, { preserveState: true });
 }
 
 function handleClickOutside(e) {

@@ -3,11 +3,13 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\StreamController;
 use App\Http\Controllers\UserStoryController;
 use App\Http\Controllers\UserStoryListController;
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +33,9 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard
     Route::get('/', DashboardController::class)->name('dashboard');
+
+    // Recherche globale
+    Route::get('/search', [SearchController::class, 'index'])->name('search.index');
 
     // Backlog Kanban
     Route::get('/backlog', [UserStoryController::class, 'index'])->name('backlog');
@@ -76,5 +81,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
         Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     });
 });

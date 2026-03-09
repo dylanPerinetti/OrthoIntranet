@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,7 +14,7 @@ class ProfileController extends Controller
     public function updateAvatar(Request $request)
     {
         $request->validate([
-            'avatar' => ['required', 'image', 'max:2048'], // 2 MB max
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         $user = $request->user();
@@ -26,6 +27,10 @@ class ProfileController extends Controller
         $path = $request->file('avatar')->store('avatars', 'public');
 
         $user->update(['avatar' => $path]);
+
+        AuditLogger::log($request, 'profile.avatar.updated', $user, [
+            'avatar' => $path,
+        ]);
 
         return back();
     }
@@ -40,6 +45,8 @@ class ProfileController extends Controller
         if ($user->avatar) {
             Storage::disk('public')->delete($user->avatar);
             $user->update(['avatar' => null]);
+
+            AuditLogger::log($request, 'profile.avatar.deleted', $user);
         }
 
         return back();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Sprint;
 use App\Models\UserStory;
+use App\Support\AuditLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,6 +13,8 @@ class SprintController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Sprint::class);
+
         $sprints = Sprint::withCount([
             'userStories',
             'userStories as stories_done_count'        => fn ($q) => $q->where('status', 'done'),
@@ -35,6 +38,8 @@ class SprintController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Sprint::class);
+
         $validated = $request->validate([
             'name'       => 'required|string|max:255',
             'number'     => 'required|integer|min:1|unique:sprints,number',
@@ -47,13 +52,21 @@ class SprintController extends Controller
         $project = Project::first();
         $validated['project_id'] = $project?->id;
 
-        Sprint::create($validated);
+        $sprint = Sprint::create($validated);
+
+        AuditLogger::log($request, 'sprint.created', $sprint, [
+            'name' => $sprint->name,
+            'number' => $sprint->number,
+            'status' => $sprint->status,
+        ]);
 
         return back();
     }
 
     public function update(Request $request, Sprint $sprint)
     {
+        $this->authorize('update', $sprint);
+
         $validated = $request->validate([
             'name'       => 'sometimes|required|string|max:255',
             'number'     => "sometimes|required|integer|min:1|unique:sprints,number,{$sprint->id}",
@@ -65,14 +78,27 @@ class SprintController extends Controller
 
         $sprint->update($validated);
 
+        AuditLogger::log($request, 'sprint.updated', $sprint, [
+            'changes' => array_keys($validated),
+        ]);
+
         return back();
     }
 
-    public function destroy(Sprint $sprint)
+    public function destroy(Request $request, Sprint $sprint)
     {
+        $this->authorize('delete', $sprint);
+
+        $sprintId = $sprint->id;
+        $sprintName = $sprint->name;
         // Unassign stories before deleting sprint
         $sprint->userStories()->update(['sprint_id' => null]);
         $sprint->delete();
+
+        AuditLogger::log($request, 'sprint.deleted', null, [
+            'id' => $sprintId,
+            'name' => $sprintName,
+        ]);
 
         return back();
     }

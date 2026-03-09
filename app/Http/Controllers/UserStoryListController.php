@@ -13,6 +13,8 @@ class UserStoryListController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', UserStory::class);
+
         $stories = UserStory::with([
             'stream:id,name,color',
             'persona:id,name,role,avatar_color',

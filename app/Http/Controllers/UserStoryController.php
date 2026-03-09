@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Stream;
 use App\Models\UserStory;
 use App\Models\User;
+use App\Support\AuditLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,6 +13,8 @@ class UserStoryController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', UserStory::class);
+
         $stories = UserStory::with(['stream:id,name,color', 'persona:id,name,role,avatar_color', 'assignee:id,name', 'creator:id,name'])
             ->orderBy('sort_order')
             ->orderByDesc('created_at')
@@ -49,6 +52,8 @@ class UserStoryController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', UserStory::class);
+
         $validated = $request->validate([
             'title'               => 'required|string|max:255',
             'description'         => 'nullable|string',
@@ -65,13 +70,21 @@ class UserStoryController extends Controller
         $validated['created_by'] = $request->user()->id;
         $validated['sort_order'] = UserStory::where('status', $validated['status'])->max('sort_order') + 1;
 
-        UserStory::create($validated);
+        $story = UserStory::create($validated);
+
+        AuditLogger::log($request, 'user_story.created', $story, [
+            'title' => $story->title,
+            'status' => $story->status,
+            'priority' => $story->priority,
+        ]);
 
         return back();
     }
 
     public function update(Request $request, UserStory $userStory)
     {
+        $this->authorize('update', $userStory);
+
         $validated = $request->validate([
             'title'               => 'sometimes|required|string|max:255',
             'description'         => 'nullable|string',
@@ -87,11 +100,17 @@ class UserStoryController extends Controller
 
         $userStory->update($validated);
 
+        AuditLogger::log($request, 'user_story.updated', $userStory, [
+            'changes' => array_keys($validated),
+        ]);
+
         return back();
     }
 
     public function move(Request $request, UserStory $userStory)
     {
+        $this->authorize('move', $userStory);
+
         $validated = $request->validate([
             'status'     => 'required|in:todo,in_progress,done',
             'sort_order' => 'required|integer|min:0',
@@ -99,12 +118,26 @@ class UserStoryController extends Controller
 
         $userStory->update($validated);
 
+        AuditLogger::log($request, 'user_story.moved', $userStory, [
+            'status' => $validated['status'],
+            'sort_order' => $validated['sort_order'],
+        ]);
+
         return back();
     }
 
-    public function destroy(UserStory $userStory)
+    public function destroy(Request $request, UserStory $userStory)
     {
+        $this->authorize('delete', $userStory);
+
+        $storyId = $userStory->id;
+        $storyTitle = $userStory->title;
         $userStory->delete();
+
+        AuditLogger::log($request, 'user_story.deleted', null, [
+            'id' => $storyId,
+            'title' => $storyTitle,
+        ]);
 
         return back();
     }

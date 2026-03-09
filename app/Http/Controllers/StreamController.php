@@ -10,6 +10,8 @@ class StreamController extends Controller
 {
     public function show(Stream $stream)
     {
+        $this->authorize('view', $stream);
+
         $stream->loadCount('userStories');
 
         $stories = $stream->userStories()
