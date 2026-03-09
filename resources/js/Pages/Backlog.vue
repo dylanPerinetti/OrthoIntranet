@@ -233,15 +233,77 @@
                   ></textarea>
                 </div>
 
-                <!-- Critères d'acceptation -->
+                <!-- Critères d'acceptation — checklist interactive -->
                 <div>
-                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Critères d'acceptation</label>
-                  <textarea
-                    v-model="storyForm.acceptance_criteria"
-                    rows="2"
-                    class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 outline-none transition-all resize-none font-mono text-xs"
-                    placeholder="- [ ] Critère 1&#10;- [ ] Critère 2"
-                  ></textarea>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Critères d'acceptation</label>
+                    <span v-if="criteriaItems.length" class="text-[10px] tabular-nums text-gray-400 dark:text-gray-500">
+                      {{ criteriaItems.filter(c => c.done).length }}/{{ criteriaItems.length }} validés
+                    </span>
+                  </div>
+
+                  <!-- Progress bar -->
+                  <div v-if="criteriaItems.length" class="h-1 rounded-full bg-gray-100 dark:bg-gray-700 mb-3 overflow-hidden">
+                    <div
+                      class="h-full rounded-full bg-emerald-500 transition-all duration-300"
+                      :style="{ width: criteriaItems.length ? (criteriaItems.filter(c => c.done).length / criteriaItems.length * 100) + '%' : '0%' }"
+                    ></div>
+                  </div>
+
+                  <!-- Liste des critères -->
+                  <div v-if="criteriaItems.length" class="space-y-1.5 mb-2.5">
+                    <div
+                      v-for="(item, idx) in criteriaItems"
+                      :key="idx"
+                      class="group flex items-start gap-2.5 px-3 py-2 rounded-lg border transition-all"
+                      :class="item.done
+                        ? 'border-emerald-200 dark:border-emerald-800/40 bg-emerald-50/50 dark:bg-emerald-900/10'
+                        : 'border-gray-150 dark:border-gray-600/60 bg-white dark:bg-gray-700/30 hover:border-gray-300 dark:hover:border-gray-500'"
+                    >
+                      <button
+                        type="button"
+                        @click="toggleCriteria(idx)"
+                        :class="[
+                          'mt-0.5 flex-shrink-0 w-4.5 h-4.5 rounded border-2 flex items-center justify-center transition-all',
+                          item.done
+                            ? 'bg-emerald-500 border-emerald-500 text-white'
+                            : 'border-gray-300 dark:border-gray-500 hover:border-emerald-400 dark:hover:border-emerald-500'
+                        ]"
+                      >
+                        <svg v-if="item.done" class="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg>
+                      </button>
+                      <input
+                        v-model="criteriaItems[idx].text"
+                        @input="syncCriteriaToForm"
+                        @keydown.enter.prevent="addCriteria"
+                        type="text"
+                        :class="[
+                          'flex-1 bg-transparent text-sm outline-none transition-colors',
+                          item.done
+                            ? 'text-gray-400 dark:text-gray-500 line-through'
+                            : 'text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500'
+                        ]"
+                        :placeholder="'Critère ' + (idx + 1)"
+                      />
+                      <button
+                        type="button"
+                        @click="removeCriteria(idx)"
+                        class="flex-shrink-0 mt-0.5 p-0.5 rounded text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 transition-all"
+                      >
+                        <X class="w-3.5 h-3.5" :stroke-width="2" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Bouton ajouter -->
+                  <button
+                    type="button"
+                    @click="addCriteria"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all"
+                  >
+                    <ListChecks class="w-3.5 h-3.5" :stroke-width="2" />
+                    Ajouter un critère
+                  </button>
                 </div>
               </div>
 
@@ -431,7 +493,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {
   Plus, Pencil, Trash2, Inbox, X, Filter,
   FileText, Tag, Users, Sparkles, Loader2, CheckCircle2,
-  ArrowUp, Minus, ArrowDown,
+  ArrowUp, Minus, ArrowDown, ListChecks,
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -458,6 +520,43 @@ const statusOptions = [
 ];
 
 const titleInput = ref(null);
+
+/* ── Critères d'acceptation (checklist) ── */
+const criteriaItems = ref([]);
+
+function parseCriteria(raw) {
+  if (!raw) return [];
+  return raw.split('\n').filter(l => l.trim()).map(line => {
+    const done = /^\s*-\s*\[x\]/i.test(line);
+    const text = line.replace(/^\s*-\s*\[[ x]?\]\s*/i, '').trim();
+    return { text, done };
+  });
+}
+
+function syncCriteriaToForm() {
+  storyForm.acceptance_criteria = criteriaItems.value
+    .filter(c => c.text.trim())
+    .map(c => `- [${c.done ? 'x' : ' '}] ${c.text}`)
+    .join('\n');
+}
+
+function addCriteria() {
+  criteriaItems.value.push({ text: '', done: false });
+  nextTick(() => {
+    const inputs = document.querySelectorAll('[data-criteria-input]');
+    // focus last — we'll use a simpler selector-free approach
+  });
+}
+
+function removeCriteria(idx) {
+  criteriaItems.value.splice(idx, 1);
+  syncCriteriaToForm();
+}
+
+function toggleCriteria(idx) {
+  criteriaItems.value[idx].done = !criteriaItems.value[idx].done;
+  syncCriteriaToForm();
+}
 
 /* ── Filter ── */
 const activeStreamFilter = ref(null);
@@ -496,6 +595,7 @@ function openCreateModal() {
   storyForm.reset();
   storyForm.clearErrors();
   if (props.streams.length) storyForm.stream_id = props.streams[0].id;
+  criteriaItems.value = [];
   showModal.value = true;
   nextTick(() => titleInput.value?.focus());
 }
@@ -505,6 +605,7 @@ function openEditModal(story) {
   storyForm.title = story.title;
   storyForm.description = story.description || '';
   storyForm.acceptance_criteria = story.acceptance_criteria || '';
+  criteriaItems.value = parseCriteria(story.acceptance_criteria);
   storyForm.stream_id = story.stream_id;
   storyForm.status = story.status;
   storyForm.priority = story.priority;
